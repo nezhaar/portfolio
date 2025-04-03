@@ -54,3 +54,6 @@ body {
 .js { background-color: #f1c40f; width: 50%; }
 .sql { background-color: #3498db; width: 50%; }
 .php { background-color: #8e44ad; width: 50%; }
+
+.projects { grid-column: 2/4; grid-row:2/3; }
+.profile a {color:#ffffff;}
