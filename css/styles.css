@@ -57,3 +57,40 @@ body {
 
 .projects { grid-column: 2/4; grid-row:2/3; }
 .profile a {color:#ffffff;}
+
+/* Styles généraux pour les grands écrans (PC) */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    gap: 10px;
+    width: 80%;
+    max-width: 900px;
+    background-color: #002b80;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Pour les tablettes : une colonne pour le profil et les compétences/projets empilés */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .profile {
+        grid-row: auto;
+    }
+    .projects {
+        grid-column: auto;
+    }
+}
+
+/* Pour les mobiles : ajustement de la largeur et réduction de la taille de l'image de profil */
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+    .profile img {
+        width: 150px;
+        height: 150px;
+    }
+}
