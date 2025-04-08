@@ -81,6 +81,7 @@ body {
     .projects {
         grid-column: auto;
     }
+    body { height: auto; }
 }
 
 /* Pour les mobiles : ajustement de la largeur et réduction de la taille de l'image de profil */
