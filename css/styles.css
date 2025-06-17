@@ -1981,11 +1981,6 @@ body:hover .cursor-trail {
     transition: var(--transition);
 }
 
-.sound-toggle.muted .sound-icon::after {
-    content: '🔇';
-    position: absolute;
-}
-
 /* === LAYOUT (votre structure existante) === */
 .container {
     min-height: 100vh;
