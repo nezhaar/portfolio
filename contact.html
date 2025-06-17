@@ -3,42 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire de Contact</title>
-    <link rel="stylesheet" href="./css/contact.css">
+    <title>Contact - Morgan VERSPEEK</title>
+    <link rel="stylesheet" href="css/contact.css">
 </head>
 <body>
     <div class="container">
-        <h2>Formulaire de contact</h2>
+        <a href="index.html" class="back-link">← Retour au portfolio</a>
+        
+        <h2>💬 Me Contacter</h2>
+        
         <form action="https://api.web3forms.com/submit" method="POST">
             <!-- Clé d'accès requise -->
             <input type="hidden" name="access_key" value="0ac35e39-bf9c-45c4-b596-a1593399d1b9">
-
+            
             <!-- Champ anti-spam caché -->
             <input type="checkbox" name="botcheck" style="display: none;">
-            <label for="prenom">Prénom</label>
-            <input type="text" id="prenom" name="prenom" required>
+            
+            <div class="form-group">
+                <label for="prenom">Prénom <span class="required">*</span></label>
+                <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
+            </div>
 
-            <label for="nom">Nom</label>
-            <input type="text" id="nom" name="nom" required>
+            <div class="form-group">
+                <label for="nom">Nom <span class="required">*</span></label>
+                <input type="text" id="nom" name="nom" required placeholder="Votre nom de famille">
+            </div>
 
-            <label for="societe">Société</label>
-            <input type="text" id="societe" name="societe">
+            <div class="form-group">
+                <label for="societe">Société</label>
+                <input type="text" id="societe" name="societe" placeholder="Nom de votre entreprise (optionnel)">
+            </div>
 
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="votre.email@exemple.com">
+            </div>
 
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
+            <div class="form-group">
+                <label for="message">Message <span class="required">*</span></label>
+                <textarea id="message" name="message" rows="5" required placeholder="Décrivez votre projet ou votre demande..."></textarea>
+            </div>
 
             <!-- hCaptcha pour la protection contre le spam -->
             <div class="h-captcha" data-captcha="true"></div>
 
-            <button type="submit">Envoyer</button>
+            <button type="submit">🚀 Envoyer le message</button>
         </form>
+        
+        <div class="contact-info">
+            <p>📧 Réponse sous 24h maximum</p>
+            <p>📍 Basé à Tourcoing, France</p>
+            
+            <div class="social-links">
+                <a href="#" title="LinkedIn">💼</a>
+                <a href="https://github.com/sakura-haruk" title="GitHub" target="_blank">💻</a>
+                <a href="https://discord.com/users/VOTRE_USER_ID" title="Discord" target="_blank">💬</a>
+            </div>
+        </div>
     </div>
 
     <!-- Script nécessaire pour hCaptcha -->
     <script src="https://web3forms.com/client/script.js" async defer></script>
 </body>
 </html>
-
