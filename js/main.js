@@ -955,14 +955,14 @@ function addChatMessage(content, type) {
 
 function generateChatResponse(message) {
     const patterns = [
-        { regex: /bonjour|salut|hello|hey/i, response: "👋 Bonjour ! Comment puis-je vous aider ?" },
-        { regex: /aide|help/i, response: "🛟 Je suis là pour vous aider. Que cherchez-vous exactement ?" },
-        { regex: /présente.*morgan|presentation|qui.*morgan|parle de morgan|présente toi/i, response: "🧑‍💻 Morgan VERSPEEK est un développeur web passionné, spécialisé en JavaScript, Discord.js, et interfaces modernes. Il crée des projets dynamiques comme 'The Kraken'." },
-        { regex: /contact/i, response: "📧 Vous pouvez contacter Morgan via le formulaire ou sur Discord : @morgan#1234." },
-        { regex: /projet/i, response: "💼 Morgan travaille sur des bots Discord, sites web interactifs et applications modernes." },
-        { regex: /prix|tarif|coût|budget/i, response: "💰 Les tarifs varient selon le projet. Contactez-moi pour un devis personnalisé." },
-        { regex: /merci|thanks/i, response: "🙏 Avec plaisir ! N’hésitez pas si vous avez d’autres questions." },
-        { regex: /au revoir|bye|à bientôt/i, response: "👋 À bientôt ! Merci de votre visite." }
+        { regex: /bonjour|salut|hello|hey/i, response: '👋 Bonjour ! Que puis-je faire pour vous ?' },
+        { regex: /présente.*morgan|qui.*morgan|parle.*morgan/i, response: '🧑‍💻 Morgan est un développeur web passionné, spécialisé en JavaScript, bots Discord et interfaces modernes.' },
+        { regex: /contact/i, response: '📨 Vous pouvez me contacter via le formulaire ou Discord : @morgan#1234.' },
+        { regex: /projet/i, response: '📌 Je travaille sur des bots Discord, sites web, et assistants IA. Un projet en tête ?' },
+        { regex: /prix|tarif|budget/i, response: '💰 Les tarifs varient selon le projet. Contactez-moi pour un devis personnalisé.' },
+        { regex: /merci|thanks/i, response: '🙏 Avec plaisir !' },
+        { regex: /au revoir|bye/i, response: '👋 À bientôt ! Merci de votre visite.' },
+        { regex: /suggestion|sugestion/i, response: '💡 Voici quelques suggestions : "Voir les projets", "Contacter Morgan", "Tarifs des services", "Parler du bot Discord".' }
     ];
 
     const lowerMessage = message.toLowerCase();
@@ -974,6 +974,7 @@ function generateChatResponse(message) {
 
     return "Merci pour votre message ! Pour une réponse détaillée, n'hésitez pas à utiliser le formulaire de contact.";
 }
+
 
 
 // Style CSS pour l'animation ripple
@@ -997,4 +998,50 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPortfolio);
 } else {
     initPortfolio();
+}
+
+
+// === Suggestions intelligentes ===
+function showSuggestions() {
+    const suggestions = ['Voir les projets', 'Contacter Morgan', 'Quels sont tes tarifs ?', 'Parle-moi du bot Discord'];
+    const container = document.getElementById('suggestions');
+    if (!container) return;
+    container.innerHTML = '';
+    suggestions.forEach(text => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.className = 'suggestion-btn';
+        btn.onclick = () => {
+            document.getElementById('chatInput').value = text;
+            sendMessageWithAI();
+        };
+        container.appendChild(btn);
+    });
+}
+
+// === Historique local ===
+function saveChatHistory() {
+    const messages = document.querySelectorAll('.chat-messages .message');
+    const history = [];
+    messages.forEach(msg => {
+        history.push({ role: msg.classList.contains('user') ? 'user' : 'bot', text: msg.innerText });
+    });
+    localStorage.setItem('chatHistory', JSON.stringify(history));
+}
+
+function restoreChatHistory() {
+    const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    history.forEach(entry => {
+        addChatMessage(entry.text, entry.role);
+    });
+}
+
+// === Typing animation améliorée ===
+function addTypingDots() {
+    const chat = document.querySelector('.chat-messages');
+    const msg = document.createElement('div');
+    msg.className = 'message bot typing';
+    msg.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
 }
