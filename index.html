@@ -4,51 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio VERSPEEK Morgan</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
         <div class="profile">
             <img src="./image/profile.png" alt="Photo de profil">
-            <p>Morgan<br>22 ans<br>A Tourcoing</p>
-            <p><a href="contact.html">Contact</a></p>
+            <h2>Morgan VERSPEEK</h2>
+            <p>Développeur Web<br>22 ans<br>📍 Tourcoing</p>
+            <a href="contact.html">💬 Me Contacter</a>
         </div>
+        
         <div class="skills">
-            <h3>Niveau front-end</h3>
-            <p>HTML</p>
-            <div class="progress-bar"><div class="html"></div></div>
-            <p>CSS</p>
-            <div class="progress-bar"><div class="css"></div></div>
-            <p>JavaScript</p>
-            <div class="progress-bar"><div class="js"></div></div>
+            <h3>🎨 Front-end</h3>
+            <div class="skill-item">
+                <p>HTML</p>
+                <div class="progress-bar"><div class="html">75%</div></div>
+            </div>
+            <div class="skill-item">
+                <p>CSS</p>
+                <div class="progress-bar"><div class="css">70%</div></div>
+            </div>
+            <div class="skill-item">
+                <p>JavaScript</p>
+                <div class="progress-bar"><div class="js">60%</div></div>
+            </div>
         </div>
+        
         <div class="skills">
-            <h3>Niveau back-end</h3>
-            <p>SQL</p>
-            <div class="progress-bar"><div class="sql"></div></div>
-            <p>PHP</p>
-            <div class="progress-bar"><div class="php"></div></div>
+            <h3>⚙️ Back-end</h3>
+            <div class="skill-item">
+                <p>SQL</p>
+                <div class="progress-bar"><div class="sql">65%</div></div>
+            </div>
+            <div class="skill-item">
+                <p>PHP</p>
+                <div class="progress-bar"><div class="php">55%</div></div>
+            </div>
         </div>
-    <div class="projects">
-    <h3>Mes projets</h3>
-
-    <div class="project">
-        <h4>🤖 The Kraken – Bot Discord</h4>
-        <p>
-            <strong>The Kraken</strong> est un bot Discord développé en JavaScript avec Discord.js. Il permet la modération automatique, la gestion de musique via YouTube, et l’intégration d’API modernes comme GPT et MongoDB.
-        </p>
-        <ul>
-            <li>🛡️ Commandes de modération : kick, ban, clear, mute</li>
-            <li>🎵 Commandes musicales : !play, !skip, !stop</li>
-            <li>🧠 Base de données MongoDB + système de logs</li>
-        </ul>
-        <p>
-            🔗 <a href="https://github.com/sakura-haruk/the-kraken" target="_blank">Voir le projet sur GitHub</a>
-        </p>
-        <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord" style="max-width:100%; border-radius: 8px; margin-top: 10px;">
-    </div>
-</div>
-
+        
+        <div class="projects">
+            <h3>🚀 Mes Projets</h3>
+            
+            <div class="project">
+                <h4>🤖 The Kraken – Bot Discord</h4>
+                <p>
+                    <strong>The Kraken</strong> est un bot Discord avancé développé en JavaScript avec Discord.js. 
+                    Il offre une modération automatique, une gestion musicale via YouTube, et s'intègre avec des APIs modernes comme GPT et MongoDB.
+                </p>
+                <ul>
+                    <li>Système de modération complet : kick, ban, clear, mute</li>
+                    <li>Lecteur musical intégré : !play, !skip, !stop</li>
+                    <li>Base de données MongoDB avec système de logs avancé</li>
+                    <li>Interface utilisateur intuitive avec commandes slash</li>
+                    <li>Intégration GPT pour des réponses intelligentes</li>
+                </ul>
+                <a href="https://github.com/sakura-haruk/the-kraken" target="_blank">
+                    🔗 Voir sur GitHub
+                </a>
+                <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken">
+            </div>
+        </div>
     </div>
 </body>
 </html>
