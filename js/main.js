@@ -79,6 +79,19 @@ function toggleSound() {
 }
 
 function updateSoundIcon() {
+    const soundIcon = document.querySelector('.sound-icon');
+    const soundToggle = document.querySelector('.sound-toggle');
+    
+    if (soundIcon && soundToggle) {
+        // Changer directement le contenu de l'icône
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        
+        // Optionnel : ajouter/enlever une classe pour le style
+        soundToggle.classList.toggle('muted', !soundEnabled);
+    }
+}
+
+function updateSoundIcon() {
     const soundToggle = document.querySelector('.sound-toggle');
     if (soundToggle) {
         soundToggle.classList.toggle('muted', !soundEnabled);
