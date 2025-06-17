@@ -1981,10 +1981,9 @@ body:hover .cursor-trail {
     transition: var(--transition);
 }
 
-/* Effet visuel optionnel quand le son est coupé */
-.sound-toggle.muted {
-    opacity: 0.7;
-    filter: grayscale(50%);
+.sound-toggle.muted .sound-icon::after {
+    content: '🔇';
+    position: absolute;
 }
 
 /* === LAYOUT (votre structure existante) === */
