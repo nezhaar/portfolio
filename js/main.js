@@ -1059,7 +1059,6 @@ function addChatMessage(content, type) {
     messages.appendChild(message);
     messages.scrollTop = messages.scrollHeight;
 }
-
 function generateChatResponse(message) {
     const patterns = [
         { regex: /bonjour|salut|hello|hey/i, response: '👋 Bonjour ! Que puis-je faire pour vous ?' },
