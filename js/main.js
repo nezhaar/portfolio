@@ -884,7 +884,7 @@ function showAbout() {
 // Projet actions
 function inviteBot() {
     playSound('click');
-    showNotification('🤖', 'Contactez-moi pour obtenir le lien d\'invitation !');
+    window.open('https://the-kraken-bot-d8gw.onrender.com/', '_blank'); // ← met ici l'URL de ton site
 }
 
 function showStats() {
