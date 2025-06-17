@@ -13,7 +13,7 @@ let gameState = { running: false, score: 0, snake: [], food: {}, direction: 'rig
 function initPortfolio() {
     console.log('🚀 Initialisation du portfolio...');
     
-    // Thème
+    // Thème et son
     initializeTheme();
     
     // Particules
@@ -46,6 +46,7 @@ function initPortfolio() {
 function initializeTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     updateThemeIcon();
+    updateSoundIcon(); // Initialiser l'icône son aussi
 }
 
 function toggleTheme() {
@@ -80,18 +81,13 @@ function toggleSound() {
 
 function updateSoundIcon() {
     const soundIcon = document.querySelector('.sound-icon');
-    const soundToggle = document.querySelector('.sound-toggle');
     
-    if (soundIcon && soundToggle) {
+    if (soundIcon) {
         // Changer directement le contenu de l'icône
         soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
-        
-        // Optionnel : ajouter/enlever une classe pour le style
-        soundToggle.classList.toggle('muted', !soundEnabled);
     }
-}
-
-function updateSoundIcon() {
+    
+    // Ajouter/enlever une classe pour le style
     const soundToggle = document.querySelector('.sound-toggle');
     if (soundToggle) {
         soundToggle.classList.toggle('muted', !soundEnabled);
