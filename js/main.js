@@ -890,7 +890,7 @@ function inviteBot() {
 function showStats() {
     playSound('click');
 
-    fetch('https://the-kraken-bot-d8gw.onrender.com/api/stats')
+    fetch('https://krakentime-winter-paper-1452.fly.dev/api/stats')
         .then(response => response.json())
         .then(data => {
             const msg = `📊 Statistiques du bot : ${data.servers}+ serveurs, ${data.users}+ utilisateurs actifs`;
@@ -901,6 +901,7 @@ function showStats() {
             showNotification('📊', "Impossible de récupérer les statistiques du bot.");
         });
 }
+
 
 
 function sharePortfolio() {
