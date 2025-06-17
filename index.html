@@ -160,14 +160,14 @@
                             <span class="button-icon">💻</span>
                             Code Source
                         </a>
-                        <button class="action-button secondary">
-                            <span class="button-icon">📱</span>
-                            Démo Live
-                        </button>
+                        <a href="#" class="action-button secondary" onclick="openInviteBot()">
+                            <span class="button-icon">🤖</span>
+                            Inviter le Bot
+                        </a>
                     </div>
 
-                    <div class="project-image">
-                        <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken">
+                    <div class="project-image" onclick="openImageModal()">
+                        <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken" id="project-img">
                         <div class="image-overlay">
                             <span class="overlay-text">Voir en grand</span>
                         </div>
@@ -211,5 +211,50 @@
             </footer>
         </main>
     </div>
+
+    <!-- Modal pour agrandir l'image -->
+    <div id="imageModal" class="modal" onclick="closeImageModal()">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="modalImage" src="" alt="Image agrandie">
+            <div class="modal-info">
+                <h3>The Kraken - Bot Discord</h3>
+                <p>Interface de commandes du bot avec système de modération et lecteur musical intégré</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour ouvrir la modal d'image
+        function openImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const img = document.getElementById('project-img');
+            
+            modal.style.display = 'flex';
+            modalImg.src = img.src;
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fonction pour fermer la modal
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Fonction pour inviter le bot (vous pouvez remplacer par votre lien d'invitation)
+        function openInviteBot() {
+            // Remplacez cette URL par votre lien d'invitation Discord
+            alert('Lien d\'invitation du bot à venir !\n\nContactez-moi pour obtenir l\'accès au bot.');
+        }
+
+        // Fermer la modal avec la touche Échap
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
 </body>
 </html>
