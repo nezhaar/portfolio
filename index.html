@@ -3,68 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio VERSPEEK Morgan</title>
+    <title>Portfolio - Morgan VERSPEEK</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="profile">
-            <img src="./image/profile.png" alt="Photo de profil">
-            <h2>Morgan VERSPEEK</h2>
-            <p>Développeur Web<br>22 ans<br>📍 Tourcoing</p>
-            <a href="contact.html">💬 Me Contacter</a>
-        </div>
-        
-        <div class="skills">
-            <h3>🎨 Front-end</h3>
-            <div class="skill-item">
-                <p>HTML</p>
-                <div class="progress-bar"><div class="html">75%</div></div>
-            </div>
-            <div class="skill-item">
-                <p>CSS</p>
-                <div class="progress-bar"><div class="css">70%</div></div>
-            </div>
-            <div class="skill-item">
-                <p>JavaScript</p>
-                <div class="progress-bar"><div class="js">60%</div></div>
-            </div>
-        </div>
-        
-        <div class="skills">
-            <h3>⚙️ Back-end</h3>
-            <div class="skill-item">
-                <p>SQL</p>
-                <div class="progress-bar"><div class="sql">65%</div></div>
-            </div>
-            <div class="skill-item">
-                <p>PHP</p>
-                <div class="progress-bar"><div class="php">55%</div></div>
-            </div>
-        </div>
-        
-        <div class="projects">
-            <h3>🚀 Mes Projets</h3>
-            
-            <div class="project">
-                <h4>🤖 The Kraken – Bot Discord</h4>
-                <p>
-                    <strong>The Kraken</strong> est un bot Discord avancé développé en JavaScript avec Discord.js. 
-                    Il offre une modération automatique, une gestion musicale via YouTube, et s'intègre avec des APIs modernes comme GPT et MongoDB.
+        <!-- Sidebar Profile -->
+        <aside class="profile-sidebar">
+            <div class="profile-header">
+                <div class="profile-image">
+                    <img src="./image/profile.png" alt="Morgan VERSPEEK">
+                </div>
+                <h1 class="profile-name">Morgan VERSPEEK</h1>
+                <p class="profile-title">Développeur Web</p>
+                <p class="profile-location">
+                    <span class="location-icon">📍</span>
+                    22 ans • Tourcoing
                 </p>
-                <ul>
-                    <li>Système de modération complet : kick, ban, clear, mute</li>
-                    <li>Lecteur musical intégré : !play, !skip, !stop</li>
-                    <li>Base de données MongoDB avec système de logs avancé</li>
-                    <li>Interface utilisateur intuitive avec commandes slash</li>
-                    <li>Intégration GPT pour des réponses intelligentes</li>
-                </ul>
-                <a href="https://github.com/sakura-haruk/the-kraken" target="_blank">
-                    🔗 Voir sur GitHub
-                </a>
-                <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken">
             </div>
-        </div>
+
+            <a href="contact.html" class="contact-button">
+                <span class="button-icon">💬</span>
+                Me Contacter
+            </a>
+
+            <!-- Skills Front-end -->
+            <div class="skills-section">
+                <h3 class="skills-title">
+                    <span class="title-icon">🎨</span>
+                    Front-end
+                </h3>
+                
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">HTML</span>
+                        <span class="skill-percentage">75%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress skill-html"></div>
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">CSS</span>
+                        <span class="skill-percentage">70%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress skill-css"></div>
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">JavaScript</span>
+                        <span class="skill-percentage">60%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress skill-js"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Back-end -->
+            <div class="skills-section">
+                <h3 class="skills-title">
+                    <span class="title-icon">⚙️</span>
+                    Back-end
+                </h3>
+                
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">SQL</span>
+                        <span class="skill-percentage">65%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress skill-sql"></div>
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <div class="skill-header">
+                        <span class="skill-name">PHP</span>
+                        <span class="skill-percentage">55%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress skill-php"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Section -->
+            <header class="header-section">
+                <div class="header-content">
+                    <h2 class="section-title">
+                        <span class="title-icon">🚀</span>
+                        Mes Projets
+                    </h2>
+                    <p class="section-description">
+                        Découvrez mes créations et réalisations techniques
+                    </p>
+                </div>
+            </header>
+
+            <!-- Projects Grid -->
+            <section class="projects-grid">
+                <!-- Project Card -->
+                <article class="project-card featured">
+                    <div class="project-header">
+                        <div class="project-icon">🤖</div>
+                        <div class="project-info">
+                            <h3 class="project-title">The Kraken</h3>
+                            <p class="project-subtitle">Bot Discord Avancé</p>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-badge active">Actif</span>
+                        </div>
+                    </div>
+
+                    <div class="project-description">
+                        <p>
+                            Bot Discord complet développé en <strong>JavaScript</strong> avec Discord.js. 
+                            Intègre modération automatique, lecteur musical, et APIs modernes (GPT, MongoDB).
+                        </p>
+                    </div>
+
+                    <div class="project-features">
+                        <h4 class="features-title">Fonctionnalités principales :</h4>
+                        <ul class="features-list">
+                            <li>🛡️ Système de modération complet (kick, ban, mute, clear)</li>
+                            <li>🎵 Lecteur musical intégré avec commandes avancées</li>
+                            <li>🧠 Base de données MongoDB avec logs détaillés</li>
+                            <li>⚡ Commandes slash pour une UX moderne</li>
+                            <li>🤖 Intégration GPT pour réponses intelligentes</li>
+                        </ul>
+                    </div>
+
+                    <div class="project-tech">
+                        <div class="tech-stack">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Discord.js</span>
+                            <span class="tech-tag">MongoDB</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">GPT API</span>
+                        </div>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="https://github.com/sakura-haruk/the-kraken" target="_blank" class="action-button primary">
+                            <span class="button-icon">💻</span>
+                            Code Source
+                        </a>
+                        <button class="action-button secondary">
+                            <span class="button-icon">📱</span>
+                            Démo Live
+                        </button>
+                    </div>
+
+                    <div class="project-image">
+                        <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken">
+                        <div class="image-overlay">
+                            <span class="overlay-text">Voir en grand</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Future Project Placeholder -->
+                <article class="project-card placeholder">
+                    <div class="placeholder-content">
+                        <div class="placeholder-icon">✨</div>
+                        <h3 class="placeholder-title">Projet à venir</h3>
+                        <p class="placeholder-description">
+                            De nouveaux projets passionnants sont en cours de développement...
+                        </p>
+                        <div class="placeholder-animation">
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer-section">
+                <div class="footer-content">
+                    <p class="footer-text">
+                        💼 Ouvert aux opportunités • 📧 Réponse rapide garantie
+                    </p>
+                    <div class="footer-links">
+                        <a href="https://github.com/sakura-haruk" target="_blank" class="footer-link">
+                            💻 GitHub
+                        </a>
+                        <a href="contact.html" class="footer-link">
+                            📞 Contact
+                        </a>
+                    </div>
+                </div>
+            </footer>
+        </main>
     </div>
 </body>
 </html>
