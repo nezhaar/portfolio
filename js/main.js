@@ -9,18 +9,29 @@ let konamiSequence = [];
 let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
 let gameState = { running: false, score: 0, snake: [], food: {}, direction: 'right' };
 
+// Détection des capacités de l'appareil
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTablet = /iPad|Android|Tablet/i.test(navigator.userAgent) && window.innerWidth >= 768 && window.innerWidth <= 1024;
+const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const hasHover = window.matchMedia('(hover: hover)').matches;
+
 // === INITIALISATION ===
 function initPortfolio() {
     console.log('🚀 Initialisation du portfolio...');
+    console.log('📱 Mobile:', isMobile, '| Tablette:', isTablet, '| Touch:', hasTouch, '| Hover:', hasHover);
     
     // Thème
     initializeTheme();
     
-    // Particules
-    initializeParticles();
+    // Particules (desktop uniquement)
+    if (!isMobile && !isTablet && hasHover) {
+        initializeParticles();
+    }
     
-    // Curseur personnalisé
-    initializeCursor();
+    // Curseur personnalisé (desktop uniquement)
+    if (!hasTouch && hasHover) {
+        initializeCursor();
+    }
     
     // Animations d'entrée
     startAnimations();
@@ -34,18 +45,64 @@ function initPortfolio() {
     // Konami code
     initializeKonamiCode();
     
-    // Chat automatique
+    // Sons (vérifier compatibilité)
+    initializeAudio();
+    
+    // Chat automatique (délai plus long sur mobile)
+    const chatDelay = isMobile ? 15000 : 10000;
     setTimeout(() => {
         showNotification('💬', 'Besoin d\'aide ? Le chat est disponible !');
-    }, 10000);
+    }, chatDelay);
     
     console.log('✅ Portfolio initialisé avec succès !');
+}
+
+// === AUDIO ===
+function initializeAudio() {
+    // Vérifier la compatibilité Web Audio API
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    
+    if (!window.AudioContext) {
+        console.log('🔇 Web Audio API non supportée');
+        soundEnabled = false;
+        updateSoundIcon();
+    }
+    
+    // Sur mobile, l'audio nécessite une interaction utilisateur
+    if (hasTouch && soundEnabled) {
+        document.addEventListener('touchstart', enableAudioOnFirstTouch, { once: true });
+        document.addEventListener('click', enableAudioOnFirstTouch, { once: true });
+    }
+}
+
+function enableAudioOnFirstTouch() {
+    if (soundEnabled && window.AudioContext) {
+        try {
+            const audioContext = new AudioContext();
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            console.log('🔊 Audio activé après interaction utilisateur');
+        } catch (error) {
+            console.log('❌ Erreur activation audio:', error);
+            soundEnabled = false;
+            updateSoundIcon();
+        }
+    }
 }
 
 // === THÈME ===
 function initializeTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     updateThemeIcon();
+    
+    // Éviter les conflits avec le thème système sur mobile
+    if (hasTouch) {
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+            metaTheme.content = currentTheme === 'dark' ? '#ff0000' : '#ffffff';
+        }
+    }
 }
 
 function toggleTheme() {
@@ -53,6 +110,15 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
+    
+    // Mettre à jour la couleur de thème mobile
+    if (hasTouch) {
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+            metaTheme.content = currentTheme === 'dark' ? '#ff0000' : '#ffffff';
+        }
+    }
+    
     playSound('click');
     showNotification('🎨', `Thème ${currentTheme === 'dark' ? 'sombre' : 'clair'} activé`);
 }
@@ -71,6 +137,10 @@ function toggleSound() {
     updateSoundIcon();
     
     if (soundEnabled) {
+        // Test du son sur activation
+        if (hasTouch) {
+            enableAudioOnFirstTouch();
+        }
         playSound('enable');
         showNotification('🔊', 'Sons activés');
     } else {
@@ -89,10 +159,26 @@ function updateSoundIcon() {
 }
 
 function playSound(type = 'click') {
-    if (!soundEnabled) return;
+    if (!soundEnabled || !window.AudioContext) return;
     
     try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioContext = new AudioContext();
+        
+        // Vérifier l'état du contexte audio
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                generateSound(audioContext, type);
+            });
+        } else {
+            generateSound(audioContext, type);
+        }
+    } catch (error) {
+        console.log('Audio context non disponible:', error);
+    }
+}
+
+function generateSound(audioContext, type) {
+    try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -113,28 +199,41 @@ function playSound(type = 'click') {
         oscillator.frequency.setValueAtTime(sound.frequency, audioContext.currentTime);
         oscillator.type = 'sine';
         
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        // Volume plus bas sur mobile
+        const volume = hasTouch ? 0.05 : 0.1;
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + sound.duration);
         
         oscillator.start();
         oscillator.stop(audioContext.currentTime + sound.duration);
     } catch (error) {
-        console.log('Audio context non disponible');
+        console.log('Erreur génération son:', error);
     }
 }
 
-// === PARTICULES ===
+// === PARTICULES (DESKTOP UNIQUEMENT) ===
 function initializeParticles() {
     const container = document.getElementById('particles-container');
     if (!container) return;
     
+    // Réduire le nombre de particules sur les appareils moins puissants
+    const particleCount = window.innerWidth > 1200 ? 30 : 20;
+    
     // Créer les particules
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < particleCount; i++) {
         createParticle();
     }
     
-    // Animation des particules
-    animateParticles();
+    // Animation des particules avec requestAnimationFrame optimisé
+    let lastTime = 0;
+    function animateParticlesOptimized(currentTime) {
+        if (currentTime - lastTime >= 100) { // Limitation à 10 FPS pour les particules
+            animateParticles();
+            lastTime = currentTime;
+        }
+        requestAnimationFrame(animateParticlesOptimized);
+    }
+    requestAnimationFrame(animateParticlesOptimized);
 }
 
 function createParticle() {
@@ -163,16 +262,16 @@ function animateParticles() {
             particle.style.top = Math.random() * 100 + '%';
         }
     });
-    
-    requestAnimationFrame(animateParticles);
 }
 
-// === CURSEUR PERSONNALISÉ ===
+// === CURSEUR PERSONNALISÉ (DESKTOP UNIQUEMENT) ===
 function initializeCursor() {
     const cursor = document.querySelector('.custom-cursor');
     const trail = document.querySelector('.cursor-trail');
     
     if (!cursor || !trail) return;
+    
+    let rafId;
     
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
@@ -182,7 +281,7 @@ function initializeCursor() {
         cursor.style.top = mouseY + 'px';
     });
     
-    // Animation de la traînée
+    // Animation de la traînée optimisée
     function updateTrail() {
         const dx = mouseX - trailX;
         const dy = mouseY - trailY;
@@ -193,7 +292,7 @@ function initializeCursor() {
         trail.style.left = trailX + 'px';
         trail.style.top = trailY + 'px';
         
-        requestAnimationFrame(updateTrail);
+        rafId = requestAnimationFrame(updateTrail);
     }
     updateTrail();
     
@@ -211,6 +310,13 @@ function initializeCursor() {
             cursor.style.transform = 'scale(1)';
             trail.style.transform = 'scale(1)';
         });
+    });
+    
+    // Nettoyer l'animation si nécessaire
+    window.addEventListener('beforeunload', () => {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+        }
     });
 }
 
@@ -232,57 +338,86 @@ function startAnimations() {
 function animateCounters() {
     const counters = document.querySelectorAll('.stat-number[data-target]');
     
-    counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-target'));
-        const duration = 2000; // 2 secondes
-        const start = performance.now();
-        
-        function updateCounter(currentTime) {
-            const elapsed = currentTime - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-            const current = Math.floor(easeOut * target);
-            
-            counter.textContent = current;
-            
-            if (progress < 1) {
+    // Utiliser l'Intersection Observer pour déclencher l'animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = isMobile ? 1500 : 2000; // Plus rapide sur mobile
+                const start = performance.now();
+                
+                function updateCounter(currentTime) {
+                    const elapsed = currentTime - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.floor(easeOut * target);
+                    
+                    counter.textContent = current;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                }
+                
                 requestAnimationFrame(updateCounter);
-            } else {
-                counter.textContent = target;
+                observer.unobserve(counter);
             }
-        }
-        
-        // Démarrer avec un délai
-        setTimeout(() => {
-            requestAnimationFrame(updateCounter);
-        }, Math.random() * 500);
-    });
+        });
+    }, { threshold: 0.5 });
+    
+    counters.forEach(counter => observer.observe(counter));
 }
 
 function animateSkillBars() {
     const skillBars = document.querySelectorAll('.skill-progress[data-width]');
     
-    skillBars.forEach((bar, index) => {
-        setTimeout(() => {
-            const width = bar.getAttribute('data-width');
-            bar.style.width = width + '%';
-        }, index * 200);
-    });
+    // Utiliser l'Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                const bar = entry.target;
+                const delay = isMobile ? index * 100 : index * 200;
+                
+                setTimeout(() => {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = width + '%';
+                }, delay);
+                
+                observer.unobserve(bar);
+            }
+        });
+    }, { threshold: 0.3 });
+    
+    skillBars.forEach(bar => observer.observe(bar));
 }
 
 function animateElements() {
     const elements = document.querySelectorAll('.project-card, .skills-section, .profile-header');
     
-    elements.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            el.style.transition = 'all 0.6s ease';
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
+    // Animation plus fluide sur mobile
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                
+                const delay = isMobile ? index * 50 : index * 100;
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, delay);
+                
+                observer.unobserve(el);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    elements.forEach(el => observer.observe(el));
 }
 
 function startCountdown() {
@@ -310,22 +445,33 @@ function startCountdown() {
 
 // === EVENT LISTENERS ===
 function setupEventListeners() {
-    // Hover effects sur les cartes
-    const cards = document.querySelectorAll('.project-card, .analytics-card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-5px)';
+    // Hover effects optimisés
+    if (hasHover) {
+        const cards = document.querySelectorAll('.project-card, .analytics-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
         });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
-        });
-    });
+    }
+    
+    // Touch events pour mobile/tablette
+    if (hasTouch) {
+        setupTouchEvents();
+    }
     
     // Ripple effect sur les boutons
-    const buttons = document.querySelectorAll('.action-button, .contact-button, .game-btn');
+    const buttons = document.querySelectorAll('.action-button, .contact-button, .game-btn, .quick-btn');
     buttons.forEach(button => {
-        button.addEventListener('click', createRipple);
+        if (hasTouch) {
+            button.addEventListener('touchstart', createRipple, { passive: true });
+        } else {
+            button.addEventListener('click', createRipple);
+        }
     });
     
     // Escape pour fermer les modals
@@ -334,6 +480,73 @@ function setupEventListeners() {
             closeAllModals();
         }
     });
+    
+    // Gestion du redimensionnement
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(handleResize, 250);
+    });
+    
+    // Prévenir le zoom sur double tap sur iOS
+    if (hasTouch) {
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    }
+}
+
+function setupTouchEvents() {
+    // Feedback tactile pour les cartes de projet
+    const cards = document.querySelectorAll('.project-card');
+    cards.forEach(card => {
+        card.addEventListener('touchstart', () => {
+            card.style.transform = 'translateY(-3px)';
+            card.style.transition = 'transform 0.1s ease';
+        }, { passive: true });
+        
+        card.addEventListener('touchend', () => {
+            setTimeout(() => {
+                card.style.transform = 'translateY(0)';
+                card.style.transition = 'transform 0.3s ease';
+            }, 100);
+        }, { passive: true });
+    });
+    
+    // Améliorer l'expérience des toggles
+    const toggles = document.querySelectorAll('.theme-toggle, .sound-toggle');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('touchstart', () => {
+            toggle.style.transform = 'scale(0.95)';
+        }, { passive: true });
+        
+        toggle.addEventListener('touchend', () => {
+            toggle.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                toggle.style.transform = 'scale(1)';
+            }, 150);
+        }, { passive: true });
+    });
+}
+
+function handleResize() {
+    // Recalculer les éléments si nécessaire
+    const gameCanvas = document.getElementById('gameCanvas');
+    if (gameCanvas && window.innerWidth < 400) {
+        gameCanvas.width = Math.min(280, window.innerWidth - 40);
+        gameCanvas.height = gameCanvas.width;
+    }
+    
+    // Ajuster le chat widget sur très petits écrans
+    const chatWidget = document.getElementById('chatWidget');
+    if (chatWidget && window.innerWidth < 400) {
+        chatWidget.style.width = 'calc(100% - 1rem)';
+    }
 }
 
 function createRipple(e) {
@@ -341,8 +554,17 @@ function createRipple(e) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top - size / 2;
+    
+    // Position du clic/touch
+    let x, y;
+    if (e.type === 'touchstart') {
+        const touch = e.touches[0];
+        x = touch.clientX - rect.left - size / 2;
+        y = touch.clientY - rect.top - size / 2;
+    } else {
+        x = e.clientX - rect.left - size / 2;
+        y = e.clientY - rect.top - size / 2;
+    }
     
     ripple.style.cssText = `
         position: absolute;
@@ -355,6 +577,7 @@ function createRipple(e) {
         transform: scale(0);
         animation: ripple 0.6s ease-out;
         pointer-events: none;
+        z-index: 1;
     `;
     
     button.style.position = 'relative';
@@ -380,10 +603,46 @@ function initializeKonamiCode() {
             konamiSequence = [];
         }
     });
+    
+    // Version tactile pour mobile (séquence de touches spéciales)
+    if (hasTouch) {
+        let touchSequence = [];
+        const touchCode = ['top', 'top', 'bottom', 'bottom', 'left', 'right', 'left', 'right'];
+        
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            let direction;
+            if (Math.abs(x - centerX) > Math.abs(y - centerY)) {
+                direction = x > centerX ? 'right' : 'left';
+            } else {
+                direction = y > centerY ? 'bottom' : 'top';
+            }
+            
+            touchSequence.push(direction);
+            
+            if (touchSequence.length > touchCode.length) {
+                touchSequence.shift();
+            }
+            
+            if (JSON.stringify(touchSequence) === JSON.stringify(touchCode)) {
+                triggerEasterEgg();
+                touchSequence = [];
+            }
+        }, { passive: true });
+    }
 }
 
 function checkKonami() {
-    showNotification('🎮', 'Indice: ↑↑↓↓←→←→BA');
+    if (hasTouch) {
+        showNotification('🎮', 'Indice mobile: Touchez ↑↑↓↓←→←→ sur l\'écran');
+    } else {
+        showNotification('🎮', 'Indice: ↑↑↓↓←→←→BA');
+    }
 }
 
 function triggerEasterEgg() {
@@ -393,13 +652,20 @@ function triggerEasterEgg() {
     // Effet Matrix
     document.body.style.filter = 'hue-rotate(120deg)';
     
-    // Créer plus de particules
-    for (let i = 0; i < 50; i++) {
-        createParticle();
+    // Créer plus de particules (si supporté)
+    if (!isMobile && !isTablet) {
+        for (let i = 0; i < 50; i++) {
+            createParticle();
+        }
     }
     
     // Effet de secousse
     document.body.classList.add('shake-animation');
+    
+    // Vibration sur mobile
+    if (hasTouch && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+    }
     
     setTimeout(() => {
         document.body.style.filter = '';
@@ -409,13 +675,18 @@ function triggerEasterEgg() {
 
 // === ANALYTICS ===
 function initializeAnalytics() {
-    // Détection du dispositif
+    // Détection du dispositif améliorée
     const deviceType = getDeviceType();
     const userAgent = navigator.userAgent;
     const language = navigator.language;
+    const screenInfo = {
+        width: window.screen.width,
+        height: window.screen.height,
+        devicePixelRatio: window.devicePixelRatio || 1
+    };
     
     // Simulation de localisation (en production, utilisez une API géolocalisation)
-    const location = 'France'; // ou utiliser navigator.geolocation
+    const location = 'France';
     
     // Stockage des données
     const analytics = {
@@ -423,6 +694,9 @@ function initializeAnalytics() {
         userAgent,
         language,
         location,
+        screenInfo,
+        hasTouch,
+        hasHover,
         visitTime: new Date().toISOString(),
         sessionId: generateSessionId()
     };
@@ -435,8 +709,8 @@ function initializeAnalytics() {
 
 function getDeviceType() {
     const width = window.innerWidth;
-    if (width < 768) return 'Mobile';
-    if (width < 1024) return 'Tablette';
+    if (isMobile || width < 768) return 'Mobile';
+    if (isTablet || (width >= 768 && width < 1024)) return 'Tablette';
     return 'Desktop';
 }
 
@@ -463,6 +737,8 @@ function showNotification(icon, message, duration = 3000) {
     const iconEl = notification.querySelector('.notification-icon');
     const textEl = notification.querySelector('.notification-text');
     
+    if (!notification || !iconEl || !textEl) return;
+    
     iconEl.textContent = icon;
     
     // Gérer les messages multi-lignes
@@ -476,15 +752,18 @@ function showNotification(icon, message, duration = 3000) {
     
     // Ajuster la largeur pour les messages longs
     if (message.length > 50) {
-        notification.style.maxWidth = '400px';
+        notification.style.maxWidth = isMobile ? '90vw' : '400px';
     } else {
-        notification.style.maxWidth = '300px';
+        notification.style.maxWidth = isMobile ? '80vw' : '300px';
     }
+    
+    // Durée plus longue sur mobile
+    const notificationDuration = hasTouch ? duration + 1000 : duration;
     
     setTimeout(() => {
         notification.classList.add('hidden');
-        notification.style.maxWidth = ''; // Reset
-    }, duration);
+        notification.style.maxWidth = '';
+    }, notificationDuration);
 }
 
 function closeAllModals() {
@@ -493,6 +772,11 @@ function closeAllModals() {
         modal.style.display = 'none';
     });
     document.body.style.overflow = 'auto';
+    
+    // Arrêter le jeu si ouvert
+    if (gameState.running) {
+        gameState.running = false;
+    }
 }
 
 // === FONCTIONS SPÉCIFIQUES ===
@@ -500,7 +784,6 @@ function closeAllModals() {
 // CV Download
 function downloadCV() {
     playSound('click');
-    // Simulation du téléchargement
     showNotification('📄', 'Téléchargement du CV...');
     
     // En production, remplacer par le vrai lien
@@ -518,9 +801,12 @@ function openTerminal() {
     document.body.style.overflow = 'hidden';
     
     const input = document.getElementById('terminalInput');
-    input.focus();
     
-    // Ajouter les event listeners pour le terminal
+    // Ne pas focus automatiquement sur mobile (évite le clavier)
+    if (!hasTouch) {
+        input.focus();
+    }
+    
     setupTerminalCommands();
 }
 
@@ -534,6 +820,9 @@ function setupTerminalCommands() {
     const input = document.getElementById('terminalInput');
     const output = document.getElementById('terminalOutput');
     
+    if (!input || !output) return;
+    
+    // Support clavier et touch
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             const command = input.value.trim();
@@ -541,9 +830,36 @@ function setupTerminalCommands() {
             input.value = '';
         }
     });
+    
+    // Bouton virtuel pour mobile
+    if (hasTouch) {
+        const terminalHeader = document.querySelector('.terminal-header');
+        if (terminalHeader && !terminalHeader.querySelector('.virtual-enter')) {
+            const enterBtn = document.createElement('button');
+            enterBtn.textContent = '⏎';
+            enterBtn.className = 'virtual-enter';
+            enterBtn.style.cssText = `
+                background: #00ff00;
+                color: #000;
+                border: none;
+                border-radius: 4px;
+                padding: 0.3rem 0.6rem;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+            enterBtn.addEventListener('click', () => {
+                const command = input.value.trim();
+                processTerminalCommand(command, output);
+                input.value = '';
+            });
+            terminalHeader.appendChild(enterBtn);
+        }
+    }
 }
 
 function processTerminalCommand(command, output) {
+    if (!output) return;
+    
     // Si la commande est vide, ne rien faire
     if (command === '') {
         const line = document.createElement('div');
@@ -557,14 +873,15 @@ function processTerminalCommand(command, output) {
     const responses = {
         'help': `Commandes disponibles:
 - about: À propos de moi
-- skills: Mes compétences
+- skills: Mes compétences  
 - projects: Mes projets
 - contact: Informations de contact
 - clear: Effacer l'écran
 - date: Date actuelle
 - whoami: Qui suis-je
 - matrix: Mode Matrix
-- joke: Blague aléatoire`,
+- joke: Blague aléatoire
+- device: Info appareil`,
         'about': 'Morgan VERSPEEK - Développeur Web passionné de 22 ans basé à Tourcoing.',
         'skills': 'HTML/CSS: 75% | JavaScript: 60% | PHP: 55% | SQL: 65%',
         'projects': '1. The Kraken - Bot Discord avancé\n2. Portfolio Interactif\n3. Projets à venir...',
@@ -574,6 +891,7 @@ function processTerminalCommand(command, output) {
         'whoami': 'morgan',
         'matrix': 'MATRIX_MODE',
         'joke': getRandomJoke(),
+        'device': `Appareil: ${getDeviceType()} | Touch: ${hasTouch} | Hover: ${hasHover}`,
         'ls': 'projects/  skills/  contact.txt  about.md',
         'pwd': '/home/morgan/portfolio',
         'echo': 'Usage: echo [message]',
@@ -590,6 +908,7 @@ function processTerminalCommand(command, output) {
     │  Packages: 3 projects       │
     │  Shell: portfolio-bash      │
     │  Theme: Dark Red Matrix     │
+    │  Device: ${getDeviceType()}            │
     ╰─────────────────────────────╯`
     };
     
@@ -614,16 +933,13 @@ function processTerminalCommand(command, output) {
         response.textContent = 'Matrix mode activé ! 🕶️';
         response.style.color = '#00ff00';
     } else if (command.startsWith('echo ')) {
-        // Commande echo
-        const message = command.substring(5); // Enlever "echo "
+        const message = command.substring(5);
         response.textContent = message;
         response.style.color = '#ffffff';
     } else if (responses[command]) {
-        // Commande trouvée dans les réponses
         response.innerHTML = responses[command].replace(/\n/g, '<br>');
         response.style.color = '#e0e0e0';
     } else {
-        // Commande non trouvée
         response.innerHTML = `<span style="color: #ff6b6b;">bash: ${command}: command not found</span><br><span style="color: #888;">Tapez 'help' pour voir les commandes disponibles.</span>`;
     }
     
@@ -662,6 +978,12 @@ function initializeGame() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     
+    // Ajuster la taille du canvas pour mobile
+    if (hasTouch && window.innerWidth < 400) {
+        canvas.width = Math.min(280, window.innerWidth - 40);
+        canvas.height = canvas.width;
+    }
+    
     // Initialiser le jeu Snake
     gameState = {
         running: false,
@@ -675,7 +997,57 @@ function initializeGame() {
     // Event listeners pour les contrôles
     document.addEventListener('keydown', handleGameInput);
     
+    // Contrôles tactiles pour mobile
+    if (hasTouch) {
+        setupTouchControls(canvas);
+    }
+    
     drawGame(ctx);
+}
+
+function setupTouchControls(canvas) {
+    let touchStartX = null;
+    let touchStartY = null;
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        
+        if (!touchStartX || !touchStartY || !gameState.running) {
+            return;
+        }
+        
+        const touch = e.changedTouches[0];
+        const touchEndX = touch.clientX;
+        const touchEndY = touch.clientY;
+        
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
+        
+        // Déterminer la direction du swipe
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            // Mouvement horizontal
+            const newDirection = diffX > 0 ? 'left' : 'right';
+            if (isValidDirection(newDirection)) {
+                gameState.direction = newDirection;
+            }
+        } else {
+            // Mouvement vertical  
+            const newDirection = diffY > 0 ? 'up' : 'down';
+            if (isValidDirection(newDirection)) {
+                gameState.direction = newDirection;
+            }
+        }
+        
+        touchStartX = null;
+        touchStartY = null;
+    }, { passive: false });
 }
 
 function startGame() {
@@ -688,6 +1060,7 @@ function startGame() {
     generateFood();
     
     document.getElementById('startGameBtn').textContent = 'Redémarrer';
+    document.getElementById('gameScore').textContent = '0';
     playSound('success');
     
     gameLoop();
@@ -716,6 +1089,7 @@ function handleGameInput(e) {
     const newDirection = directions[e.keyCode];
     if (newDirection && isValidDirection(newDirection)) {
         gameState.direction = newDirection;
+        e.preventDefault();
     }
 }
 
@@ -738,9 +1112,12 @@ function gameLoop() {
     const ctx = canvas.getContext('2d');
     drawGame(ctx);
     
+    // Vitesse adaptée selon l'appareil
+    const gameSpeed = hasTouch ? 200 : 150;
+    
     setTimeout(() => {
         requestAnimationFrame(gameLoop);
-    }, 150); // Vitesse du jeu
+    }, gameSpeed);
 }
 
 function updateGame() {
@@ -754,8 +1131,10 @@ function updateGame() {
         case 'right': head.x += gameState.gridSize; break;
     }
     
+    const canvas = document.getElementById('gameCanvas');
+    
     // Collision avec les murs
-    if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 400) {
+    if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
         gameOver();
         return;
     }
@@ -774,15 +1153,22 @@ function updateGame() {
         document.getElementById('gameScore').textContent = gameState.score;
         generateFood();
         playSound('success');
+        
+        // Vibration sur mobile
+        if (hasTouch && navigator.vibrate) {
+            navigator.vibrate(100);
+        }
     } else {
         gameState.snake.pop();
     }
 }
 
 function drawGame(ctx) {
+    const canvas = ctx.canvas;
+    
     // Effacer le canvas
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 400, 400);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Dessiner le serpent
     ctx.fillStyle = '#ff0000';
@@ -796,12 +1182,16 @@ function drawGame(ctx) {
 }
 
 function generateFood() {
+    const canvas = document.getElementById('gameCanvas');
+    const maxX = Math.floor(canvas.width / gameState.gridSize);
+    const maxY = Math.floor(canvas.height / gameState.gridSize);
+    
     let foodPosition;
     
     do {
         foodPosition = {
-            x: Math.floor(Math.random() * 20) * gameState.gridSize,
-            y: Math.floor(Math.random() * 20) * gameState.gridSize
+            x: Math.floor(Math.random() * maxX) * gameState.gridSize,
+            y: Math.floor(Math.random() * maxY) * gameState.gridSize
         };
     } while (gameState.snake.some(segment => 
         segment.x === foodPosition.x && segment.y === foodPosition.y
@@ -813,6 +1203,12 @@ function generateFood() {
 function gameOver() {
     gameState.running = false;
     playSound('error');
+    
+    // Vibration plus longue pour game over
+    if (hasTouch && navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+    }
+    
     showNotification('🐍', `Game Over! Score: ${gameState.score}`);
     document.getElementById('startGameBtn').textContent = 'Redémarrer';
 }
@@ -829,7 +1225,7 @@ function showAnalytics() {
     const visitorCount = localStorage.getItem('visitorCount') || '1';
     
     document.getElementById('visitorCount').textContent = visitorCount;
-    document.getElementById('deviceType').textContent = analytics.deviceType || 'Inconnu';
+    document.getElementById('deviceType').textContent = analytics.deviceType || getDeviceType();
     document.getElementById('userLocation').textContent = analytics.location || 'France';
     document.getElementById('timeOnSite').textContent = getTimeOnSite();
     
@@ -857,12 +1253,23 @@ function openImageModal(src, title) {
     const titleEl = document.getElementById('modalTitle');
     const descEl = document.getElementById('modalDescription');
     
+    if (!modal || !img || !titleEl || !descEl) return;
+    
     img.src = src;
     titleEl.textContent = title;
     descEl.textContent = 'Interface de commandes du bot avec système de modération et lecteur musical intégré';
     
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    
+    // Fermeture par tap sur l'arrière-plan sur mobile
+    if (hasTouch) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
 }
 
 function closeModal() {
@@ -895,17 +1302,20 @@ function showStats() {
     
     console.log('📊 Tentative de récupération des stats depuis:', apiUrl);
     
-    // Fetch avec gestion d'erreur améliorée
+    // Fetch avec timeout adapté pour mobile
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), hasTouch ? 15000 : 10000);
+    
     fetch(apiUrl, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        // Timeout de 10 secondes
-        signal: AbortSignal.timeout(10000)
+        signal: controller.signal
     })
     .then(response => {
+        clearTimeout(timeoutId);
         console.log('📊 Réponse reçue, status:', response.status);
         
         if (!response.ok) {
@@ -927,13 +1337,14 @@ function showStats() {
         
         const message = `📊 Statistiques du Kraken:\n🏠 ${serversFormatted} serveurs\n👥 ${usersFormatted} utilisateurs\n⚡ Statut: ${data.status || 'Actif'}`;
         
-        showNotification('📊', message, 5000); // Afficher plus longtemps
+        showNotification('📊', message, hasTouch ? 6000 : 5000);
         
         // Optionnel: Mettre à jour l'interface avec les stats
         updateStatsDisplay(data);
         
     })
     .catch(error => {
+        clearTimeout(timeoutId);
         console.error('❌ Erreur stats:', error);
         
         let errorMessage = '';
@@ -983,35 +1394,33 @@ function showFallbackStats() {
     showNotification('📈', fallbackMessage, 4000);
 }
 
-// === FONCTION DE TEST API ===
-function testBotAPI() {
-    console.log('🧪 Test de l\'API du bot...');
-    
-    fetch('https://krakentime-winter-paper-1452.fly.dev/api/health')
-        .then(response => response.json())
-        .then(data => {
-            console.log('✅ API Health:', data);
-            showNotification('✅', `API fonctionnelle - Bot: ${data.bot}`);
-        })
-        .catch(error => {
-            console.error('❌ API Health Error:', error);
-            showNotification('❌', 'API du bot inaccessible');
-        });
-}
-
 function sharePortfolio() {
     playSound('click');
     
-    if (navigator.share) {
+    if (navigator.share && hasTouch) {
         navigator.share({
             title: 'Portfolio Morgan VERSPEEK',
             text: 'Découvrez le portfolio de Morgan, développeur web passionné !',
             url: window.location.href
+        }).catch(error => {
+            console.log('Erreur partage natif:', error);
+            fallbackShare();
         });
     } else {
-        // Copier dans le presse-papier
-        navigator.clipboard.writeText(window.location.href);
-        showNotification('📤', 'Lien copié dans le presse-papier !');
+        fallbackShare();
+    }
+}
+
+function fallbackShare() {
+    // Copier dans le presse-papier
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showNotification('📤', 'Lien copié dans le presse-papier !');
+        }).catch(() => {
+            showNotification('📤', 'Partage: ' + window.location.href);
+        });
+    } else {
+        showNotification('📤', 'Partage: ' + window.location.href);
     }
 }
 
@@ -1020,6 +1429,16 @@ function toggleChat() {
     const widget = document.getElementById('chatWidget');
     widget.classList.toggle('minimized');
     playSound('click');
+    
+    // Scroll automatique vers les nouveaux messages sur mobile
+    if (hasTouch && !widget.classList.contains('minimized')) {
+        setTimeout(() => {
+            const messages = document.getElementById('chatMessages');
+            if (messages) {
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }, 300);
+    }
 }
 
 function handleChatEnter(e) {
@@ -1043,11 +1462,13 @@ function sendMessage() {
         const response = generateChatResponse(message);
         addChatMessage(response, 'bot');
         playSound('success');
-    }, 1000);
+    }, hasTouch ? 1500 : 1000);
 }
 
 function addChatMessage(content, type) {
     const messages = document.getElementById('chatMessages');
+    if (!messages) return;
+    
     const message = document.createElement('div');
     message.className = `message ${type}`;
     
@@ -1059,6 +1480,7 @@ function addChatMessage(content, type) {
     messages.appendChild(message);
     messages.scrollTop = messages.scrollHeight;
 }
+
 function generateChatResponse(message) {
     const patterns = [
         { regex: /bonjour|salut|hello|hey/i, response: '👋 Bonjour ! Que puis-je faire pour vous ?' },
@@ -1068,6 +1490,7 @@ function generateChatResponse(message) {
         { regex: /prix|tarif|budget/i, response: '💰 Les tarifs varient selon le projet. Contactez-moi pour un devis personnalisé.' },
         { regex: /merci|thanks/i, response: '🙏 Avec plaisir !' },
         { regex: /au revoir|bye/i, response: '👋 À bientôt ! Merci de votre visite.' },
+        { regex: /mobile|tablette|touch/i, response: '📱 Le portfolio est optimisé pour tous les appareils ! Profitez de l\'expérience tactile.' },
         { regex: /suggestion|sugestion/i, response: '💡 Voici quelques suggestions : "Voir les projets", "Contacter Morgan", "Tarifs des services", "Parler du bot Discord".' }
     ];
 
@@ -1081,7 +1504,7 @@ function generateChatResponse(message) {
     return "Merci pour votre message ! Pour une réponse détaillée, n'hésitez pas à utiliser le formulaire de contact.";
 }
 
-// Style CSS pour l'animation ripple
+// Style CSS pour l'animation ripple (déjà dans le CSS)
 const style = document.createElement('style');
 style.textContent = `
     @keyframes ripple {
@@ -1097,9 +1520,63 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialiser au chargement
+// === GESTION DES ERREURS GLOBALES ===
+window.addEventListener('error', (e) => {
+    console.error('Erreur JavaScript:', e.error);
+    
+    // Sur mobile, afficher une notification discrète
+    if (hasTouch) {
+        setTimeout(() => {
+            showNotification('⚠️', 'Une erreur mineure s\'est produite', 2000);
+        }, 1000);
+    }
+});
+
+// === DÉTECTION DE LA CONNEXION ===
+function checkConnection() {
+    if (navigator.onLine) {
+        document.body.classList.remove('offline');
+    } else {
+        document.body.classList.add('offline');
+        showNotification('📡', 'Mode hors ligne détecté', 3000);
+    }
+}
+
+window.addEventListener('online', () => {
+    checkConnection();
+    showNotification('✅', 'Connexion rétablie !');
+});
+
+window.addEventListener('offline', () => {
+    checkConnection();
+    showNotification('📡', 'Mode hors ligne');
+});
+
+// === OPTIMISATION MÉMOIRE ===
+function cleanupOnUnload() {
+    // Nettoyer les timers et listeners
+    particles.forEach(particle => {
+        if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+        }
+    });
+    particles = [];
+    
+    // Arrêter les animations
+    gameState.running = false;
+}
+
+window.addEventListener('beforeunload', cleanupOnUnload);
+window.addEventListener('pagehide', cleanupOnUnload);
+
+// === INITIALISATION FINALE ===
+// Initialiser selon l'état de chargement
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPortfolio);
 } else {
-    initPortfolio();
+    // Délai léger pour s'assurer que tout est chargé
+    setTimeout(initPortfolio, 100);
 }
+
+// Vérifier la connexion au démarrage
+setTimeout(checkConnection, 1000);
