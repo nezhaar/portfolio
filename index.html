@@ -166,7 +166,7 @@
                         </a>
                     </div>
 
-                    <div class="project-image" onclick="openImageModal()">
+                    <div class="project-image">
                         <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken" id="project-img">
                         <div class="image-overlay">
                             <span class="overlay-text">Voir en grand</span>
@@ -213,7 +213,7 @@
     </div>
 
     <!-- Modal pour agrandir l'image -->
-    <div id="imageModal" class="modal" onclick="closeImageModal()">
+    <div id="imageModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <img id="modalImage" src="" alt="Image agrandie">
@@ -225,36 +225,56 @@
     </div>
 
     <script>
-        // Fonction pour ouvrir la modal d'image
-        function openImageModal() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupération des éléments
+            const projectImage = document.querySelector('.project-image');
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
-            const img = document.getElementById('project-img');
-            
-            modal.style.display = 'flex';
-            modalImg.src = img.src;
-            document.body.style.overflow = 'hidden';
-        }
+            const projectImg = document.getElementById('project-img');
+            const closeBtn = document.querySelector('.close-modal');
 
-        // Fonction pour fermer la modal
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+            // Fonction pour ouvrir la modal
+            function openModal() {
+                modal.style.display = 'flex';
+                modalImg.src = projectImg.src;
+                document.body.style.overflow = 'hidden';
+            }
 
-        // Fonction pour inviter le bot (vous pouvez remplacer par votre lien d'invitation)
+            // Fonction pour fermer la modal
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Event listeners
+            if (projectImage) {
+                projectImage.addEventListener('click', openModal);
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+            }
+
+            // Fermer avec Échap
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+        });
+
+        // Fonction pour inviter le bot
         function openInviteBot() {
-            // Remplacez cette URL par votre lien d'invitation Discord
             alert('Lien d\'invitation du bot à venir !\n\nContactez-moi pour obtenir l\'accès au bot.');
         }
-
-        // Fermer la modal avec la touche Échap
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeImageModal();
-            }
-        });
     </script>
 </body>
 </html>
