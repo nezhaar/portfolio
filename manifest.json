@@ -1,0 +1,36 @@
+{
+  "name": "Morgan VERSPEEK - Portfolio",
+  "short_name": "Portfolio Morgan",
+  "description": "Portfolio professionnel de Morgan VERSPEEK, développeur web passionné",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ff0000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./image/nzr-favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./image/nzr-favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["portfolio", "developer", "web"],
+  "lang": "fr",
+  "dir": "ltr",
+  "scope": "/",
+  "screenshots": [
+    {
+      "src": "./image/portfolio-screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Portfolio principal"
+    }
+  ]
+}
