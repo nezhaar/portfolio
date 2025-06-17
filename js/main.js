@@ -13,7 +13,7 @@ let gameState = { running: false, score: 0, snake: [], food: {}, direction: 'rig
 function initPortfolio() {
     console.log('🚀 Initialisation du portfolio...');
     
-    // Thème et son
+    // Thème
     initializeTheme();
     
     // Particules
@@ -55,7 +55,7 @@ function toggleTheme() {
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
     playSound('click');
-    showNotification('🎨', `Thème ${currentTheme === 'dark' ? 'sombre' : 'clair'} activé`);
+    showNotification('🎨', `Thème ${currentThème === 'dark' ? 'sombre' : 'clair'} activé`);
 }
 
 function updateThemeIcon() {
@@ -536,6 +536,16 @@ function setupTerminalCommands() {
 }
 
 function processTerminalCommand(command, output) {
+    // Si la commande est vide, ne rien faire
+    if (command === '') {
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        line.innerHTML = `<span style="color: #00ff00;">morgan@portfolio:~$</span> `;
+        output.appendChild(line);
+        output.scrollTop = output.scrollHeight;
+        return;
+    }
+    
     const responses = {
         'help': `Commandes disponibles:
 - about: À propos de moi
@@ -546,26 +556,49 @@ function processTerminalCommand(command, output) {
 - date: Date actuelle
 - whoami: Qui suis-je
 - matrix: Mode Matrix
-- joke: Blague aléatoire`,
+- joke: Blague aléatoire
+- ls: Lister les fichiers
+- pwd: Répertoire courant
+- neofetch: Infos système`,
         'about': 'Morgan VERSPEEK - Développeur Web passionné de 22 ans basé à Tourcoing.',
-        'skills': 'HTML/CSS: 70% | JavaScript: 60% | PHP: 55% | SQL: 65%',
+        'skills': 'HTML/CSS: 75% | JavaScript: 60% | PHP: 55% | SQL: 65%',
         'projects': '1. The Kraken - Bot Discord avancé\n2. Portfolio Interactif\n3. Projets à venir...',
         'contact': 'Email: contact@morgan-dev.com | Discord: @morgan#1234',
         'clear': 'CLEAR_SCREEN',
         'date': new Date().toLocaleString('fr-FR'),
         'whoami': 'morgan',
         'matrix': 'MATRIX_MODE',
-        'joke': getRandomJoke()
+        'joke': getRandomJoke(),
+        'ls': 'projects/  skills/  contact.txt  about.md',
+        'pwd': '/home/morgan/portfolio',
+        'echo': 'Usage: echo [message]',
+        'cat': 'Usage: cat [filename] - Essayez: cat about.md',
+        'cat about.md': 'Développeur passionné, toujours en quête de nouveaux défis techniques !',
+        'neofetch': `
+    ╭─────────────────────────────╮
+    │  morgan@portfolio           │
+    │  ─────────────────────────  │
+    │  OS: Web Portfolio 2.0      │
+    │  Host: GitHub Pages         │
+    │  Kernel: JavaScript ES6+    │
+    │  Uptime: ${getTimeOnSite()}             │
+    │  Packages: 3 projects       │
+    │  Shell: portfolio-bash      │
+    │  Theme: Dark Red Matrix     │
+    ╰─────────────────────────────╯`
     };
     
+    // Afficher la commande tapée
     const line = document.createElement('div');
     line.className = 'terminal-line';
     line.innerHTML = `<span style="color: #00ff00;">morgan@portfolio:~$</span> ${command}`;
     output.appendChild(line);
     
+    // Traiter la commande
     const response = document.createElement('div');
     response.className = 'terminal-line';
     
+    // Commandes spéciales
     if (command === 'clear') {
         output.innerHTML = '';
         return;
@@ -574,8 +607,19 @@ function processTerminalCommand(command, output) {
     if (command === 'matrix') {
         triggerEasterEgg();
         response.textContent = 'Matrix mode activé ! 🕶️';
+        response.style.color = '#00ff00';
+    } else if (command.startsWith('echo ')) {
+        // Commande echo
+        const message = command.substring(5); // Enlever "echo "
+        response.textContent = message;
+        response.style.color = '#ffffff';
+    } else if (responses[command]) {
+        // Commande trouvée dans les réponses
+        response.innerHTML = responses[command].replace(/\n/g, '<br>');
+        response.style.color = '#e0e0e0';
     } else {
-        response.textContent = responses[command] || `Commande non trouvée: ${command}. Tapez 'help' pour voir les commandes.`;
+        // Commande non trouvée
+        response.innerHTML = `<span style="color: #ff6b6b;">bash: ${command}: command not found</span><br><span style="color: #888;">Tapez 'help' pour voir les commandes disponibles.</span>`;
     }
     
     output.appendChild(response);
