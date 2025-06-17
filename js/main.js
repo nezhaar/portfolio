@@ -83,17 +83,7 @@ function updateSoundIcon() {
     const soundToggle = document.querySelector('.sound-toggle');
     
     if (soundIcon && soundToggle) {
-        // Changer directement le contenu de l'icône
         soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
-        
-        // Optionnel : ajouter/enlever une classe pour le style
-        soundToggle.classList.toggle('muted', !soundEnabled);
-    }
-}
-
-function updateSoundIcon() {
-    const soundToggle = document.querySelector('.sound-toggle');
-    if (soundToggle) {
         soundToggle.classList.toggle('muted', !soundEnabled);
     }
 }
@@ -474,12 +464,26 @@ function showNotification(icon, message, duration = 3000) {
     const textEl = notification.querySelector('.notification-text');
     
     iconEl.textContent = icon;
-    textEl.textContent = message;
+    
+    // Gérer les messages multi-lignes
+    if (message.includes('\n')) {
+        textEl.innerHTML = message.replace(/\n/g, '<br>');
+    } else {
+        textEl.textContent = message;
+    }
     
     notification.classList.remove('hidden');
     
+    // Ajuster la largeur pour les messages longs
+    if (message.length > 50) {
+        notification.style.maxWidth = '400px';
+    } else {
+        notification.style.maxWidth = '300px';
+    }
+    
     setTimeout(() => {
         notification.classList.add('hidden');
+        notification.style.maxWidth = ''; // Reset
     }, duration);
 }
 
@@ -625,14 +629,6 @@ function processTerminalCommand(command, output) {
     
     output.appendChild(response);
     output.scrollTop = output.scrollHeight;
-}
-
-// Fonction utilitaire pour obtenir le temps de session
-function getTimeOnSite() {
-    const elapsed = Date.now() - visitStartTime;
-    const minutes = Math.floor(elapsed / 60000);
-    const seconds = Math.floor((elapsed % 60000) / 1000);
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function getRandomJoke() {
@@ -884,25 +880,124 @@ function showAbout() {
 // Projet actions
 function inviteBot() {
     playSound('click');
-    window.open('https://the-kraken-bot-d8gw.onrender.com/', '_blank'); // ← met ici l'URL de ton site
+    window.open('https://the-kraken-bot-d8gw.onrender.com/', '_blank');
 }
 
+// === FONCTION STATS CORRIGÉE ===
 function showStats() {
     playSound('click');
-
-    fetch('https://krakentime-winter-paper-1452.fly.dev/api/stats')
-        .then(response => response.json())
-        .then(data => {
-            const msg = `📊 Statistiques du bot : ${data.servers}+ serveurs, ${data.users}+ utilisateurs actifs`;
-            showNotification('📊', msg);
-        })
-        .catch(error => {
-            console.error('Erreur stats:', error);
-            showNotification('📊', "Impossible de récupérer les statistiques du bot.");
-        });
+    
+    // Afficher un message de chargement
+    showNotification('⏳', 'Récupération des statistiques...');
+    
+    // URL de votre bot sur Fly.io
+    const apiUrl = 'https://krakentime-winter-paper-1452.fly.dev/api/stats';
+    
+    console.log('📊 Tentative de récupération des stats depuis:', apiUrl);
+    
+    // Fetch avec gestion d'erreur améliorée
+    fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        // Timeout de 10 secondes
+        signal: AbortSignal.timeout(10000)
+    })
+    .then(response => {
+        console.log('📊 Réponse reçue, status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('📊 Données reçues:', data);
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Formater les nombres avec séparateurs
+        const serversFormatted = data.servers ? data.servers.toLocaleString('fr-FR') : '0';
+        const usersFormatted = data.users ? data.users.toLocaleString('fr-FR') : '0';
+        
+        const message = `📊 Statistiques du Kraken:\n🏠 ${serversFormatted} serveurs\n👥 ${usersFormatted} utilisateurs\n⚡ Statut: ${data.status || 'Actif'}`;
+        
+        showNotification('📊', message, 5000); // Afficher plus longtemps
+        
+        // Optionnel: Mettre à jour l'interface avec les stats
+        updateStatsDisplay(data);
+        
+    })
+    .catch(error => {
+        console.error('❌ Erreur stats:', error);
+        
+        let errorMessage = '';
+        
+        if (error.name === 'AbortError') {
+            errorMessage = 'Timeout: Le bot met trop de temps à répondre';
+        } else if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Erreur réseau: Impossible de contacter le bot';
+        } else if (error.message.includes('CORS')) {
+            errorMessage = 'Erreur CORS: Configuration serveur nécessaire';
+        } else {
+            errorMessage = `Erreur: ${error.message}`;
+        }
+        
+        showNotification('❌', `Statistiques indisponibles - ${errorMessage}`, 4000);
+        
+        // Afficher des stats de fallback si possible
+        showFallbackStats();
+    });
 }
 
+// === FONCTION DE MISE À JOUR DE L'AFFICHAGE ===
+function updateStatsDisplay(data) {
+    // Si vous voulez mettre à jour des éléments spécifiques de la page
+    const statsElements = {
+        servers: document.querySelector('.servers-count'),
+        users: document.querySelector('.users-count'),
+        status: document.querySelector('.bot-status')
+    };
+    
+    if (statsElements.servers) {
+        statsElements.servers.textContent = data.servers.toLocaleString('fr-FR');
+    }
+    
+    if (statsElements.users) {
+        statsElements.users.textContent = data.users.toLocaleString('fr-FR');
+    }
+    
+    if (statsElements.status) {
+        statsElements.status.textContent = data.status === 'online' ? '🟢 En ligne' : '🔴 Hors ligne';
+    }
+}
 
+// === FONCTION DE FALLBACK ===
+function showFallbackStats() {
+    const fallbackMessage = "📊 Stats approximatives:\n🏠 ~3+ serveurs\n👥 ~100+ utilisateurs\n⚡ Bot généralement actif 24/7";
+    showNotification('📈', fallbackMessage, 4000);
+}
+
+// === FONCTION DE TEST API ===
+function testBotAPI() {
+    console.log('🧪 Test de l\'API du bot...');
+    
+    fetch('https://krakentime-winter-paper-1452.fly.dev/api/health')
+        .then(response => response.json())
+        .then(data => {
+            console.log('✅ API Health:', data);
+            showNotification('✅', `API fonctionnelle - Bot: ${data.bot}`);
+        })
+        .catch(error => {
+            console.error('❌ API Health Error:', error);
+            showNotification('❌', 'API du bot inaccessible');
+        });
+}
 
 function sharePortfolio() {
     playSound('click');
@@ -987,8 +1082,6 @@ function generateChatResponse(message) {
     return "Merci pour votre message ! Pour une réponse détaillée, n'hésitez pas à utiliser le formulaire de contact.";
 }
 
-
-
 // Style CSS pour l'animation ripple
 const style = document.createElement('style');
 style.textContent = `
@@ -1005,14 +1098,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialiser au chargement
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPortfolio);
-} else {
-    initPortfolio();
-}
-
-
 // === Suggestions intelligentes ===
 function showSuggestions() {
     const suggestions = ['Voir les projets', 'Contacter Morgan', 'Quels sont tes tarifs ?', 'Parle-moi du bot Discord'];
@@ -1025,7 +1110,7 @@ function showSuggestions() {
         btn.className = 'suggestion-btn';
         btn.onclick = () => {
             document.getElementById('chatInput').value = text;
-            sendMessageWithAI();
+            sendMessage();
         };
         container.appendChild(btn);
     });
@@ -1036,7 +1121,10 @@ function saveChatHistory() {
     const messages = document.querySelectorAll('.chat-messages .message');
     const history = [];
     messages.forEach(msg => {
-        history.push({ role: msg.classList.contains('user') ? 'user' : 'bot', text: msg.innerText });
+        history.push({ 
+            role: msg.classList.contains('user') ? 'user' : 'bot', 
+            text: msg.querySelector('.message-content').innerText 
+        });
     });
     localStorage.setItem('chatHistory', JSON.stringify(history));
 }
@@ -1051,9 +1139,263 @@ function restoreChatHistory() {
 // === Typing animation améliorée ===
 function addTypingDots() {
     const chat = document.querySelector('.chat-messages');
+    if (!chat) return;
+    
     const msg = document.createElement('div');
     msg.className = 'message bot typing';
-    msg.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+    msg.innerHTML = '<div class="message-content"><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div>';
     chat.appendChild(msg);
     chat.scrollTop = chat.scrollHeight;
+    
+    return msg;
+}
+
+function removeTypingDots() {
+    const typingMsg = document.querySelector('.message.typing');
+    if (typingMsg) {
+        typingMsg.remove();
+    }
+}
+
+// === Fonctions avancées du chat ===
+function sendMessageWithAI() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    addChatMessage(message, 'user');
+    input.value = '';
+    playSound('click');
+    
+    // Afficher l'animation de frappe
+    const typingMsg = addTypingDots();
+    
+    // Simulation de réponse avec délai réaliste
+    setTimeout(() => {
+        removeTypingDots();
+        const response = generateAdvancedChatResponse(message);
+        addChatMessage(response, 'bot');
+        playSound('success');
+        saveChatHistory();
+    }, 1500 + Math.random() * 1000); // Délai variable
+}
+
+function generateAdvancedChatResponse(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Réponses contextuelles avancées
+    const advancedPatterns = [
+        { 
+            regex: /bot discord|kraken|the kraken/i, 
+            response: '🤖 The Kraken est mon bot Discord le plus avancé ! Il inclut :\n• Modération automatique\n• Lecteur musical haute qualité\n• Système de traduction\n• Jeux intégrés\n• Dashboard web complet\n\nVoulez-vous en savoir plus sur une fonctionnalité spécifique ?' 
+        },
+        { 
+            regex: /portfolio|site web|développement web/i, 
+            response: '🌐 Mon portfolio utilise des technologies modernes :\n• HTML5/CSS3 avec animations\n• JavaScript ES6+ vanilla\n• Thèmes dark/light\n• PWA (Progressive Web App)\n• Effets de particules\n• Terminal intégré\n\nTout est codé à la main pour optimiser les performances !' 
+        },
+        { 
+            regex: /compétences|skills|technologies/i, 
+            response: '💻 Mes compétences principales :\n\n🎨 **Front-end :**\n• HTML/CSS (75%)\n• JavaScript (60%)\n• Responsive Design\n\n⚙️ **Back-end :**\n• PHP (55%)\n• SQL/MongoDB (65%)\n• Node.js\n• APIs REST\n\n🔧 **Outils :**\n• Git/GitHub\n• Discord.js\n• Express.js' 
+        },
+        { 
+            regex: /tarifs|prix|coût|budget/i, 
+            response: '💰 **Tarification transparente :**\n\n🌐 **Site vitrine :** 300-800€\n🛒 **Site e-commerce :** 800-2000€\n🤖 **Bot Discord :** 150-500€\n⚡ **Application web :** Sur devis\n\n✅ **Inclus :** Hébergement 1 an, maintenance 3 mois, formation\n📞 **Devis gratuit** sous 24h !' 
+        },
+        { 
+            regex: /disponibilité|délais|quand|timing/i, 
+            response: '⏰ **Disponibilité actuelle :**\n\n✅ Disponible pour nouveaux projets\n📅 Délai moyen : 2-4 semaines\n🚀 Livraison rapide possible (+20%)\n📞 Réponse sous 24h maximum\n\nUne deadline spécifique ? Parlons-en !' 
+        },
+        { 
+            regex: /formation|école|études|diplôme/i, 
+            response: '🎓 **Parcours autodidacte :**\n\n📚 Formation continue depuis 2 ans\n💻 Projets pratiques quotidiens\n🌟 Passionné par les nouvelles technologies\n🔄 Veille technologique constante\n\nLa passion compte plus que les diplômes dans le développement !' 
+        },
+        { 
+            regex: /contact|rendez-vous|meeting|appel/i, 
+            response: '📞 **Prenons contact :**\n\n📧 Email : contact@morgan-dev.com\n💬 Discord : @morgan#1234\n📱 Réponse rapide garantie\n\n🗓️ **Consultation gratuite** de 30min pour discuter de votre projet !\n\nQuel moyen préférez-vous ?' 
+        },
+        { 
+            regex: /localisation|où|géographie|région/i, 
+            response: '📍 **Basé à Tourcoing (Nord) :**\n\n🌍 Travail à distance principalement\n🚗 Déplacements possibles (Lille, région)\n💻 Collaboration 100% digitale\n🇫🇷 Fuseau horaire France\n\nLa géographie n\'est plus une barrière !' 
+        }
+    ];
+
+    // Vérification des patterns avancés
+    for (const { regex, response } of advancedPatterns) {
+        if (regex.test(lowerMessage)) {
+            return response;
+        }
+    }
+
+    // Fallback vers les réponses basiques
+    return generateChatResponse(message);
+}
+
+// === Animations CSS avancées ===
+function addAdvancedAnimations() {
+    const advancedStyle = document.createElement('style');
+    advancedStyle.textContent = `
+        @keyframes shake-animation {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        .shake-animation {
+            animation: shake-animation 0.5s ease-in-out;
+        }
+        
+        @keyframes typing-dots {
+            0%, 20% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .typing-dots span {
+            animation: typing-dots 1.5s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: inline-block;
+            margin: 0 2px;
+            animation: loading-bounce 1.4s ease-in-out infinite both;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes loading-bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: var(--card-bg);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+        
+        .notification:not(.hidden) {
+            transform: translateX(0);
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .notification-icon {
+            font-size: 18px;
+        }
+        
+        .notification-text {
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    `;
+    document.head.appendChild(advancedStyle);
+}
+
+// === Initialisation complète avec restauration ===
+function initPortfolioComplete() {
+    console.log('🚀 Initialisation complète du portfolio...');
+    
+    // Initialisation de base
+    initPortfolio();
+    
+    // Animations avancées
+    addAdvancedAnimations();
+    
+    // Restaurer l'historique du chat
+    restoreChatHistory();
+    
+    // Afficher les suggestions du chat
+    showSuggestions();
+    
+    // Sauvegarder l'historique à la fermeture
+    window.addEventListener('beforeunload', saveChatHistory);
+    
+    console.log('✅ Portfolio entièrement initialisé !');
+}
+
+// === Debug et utilitaires ===
+function debugPortfolio() {
+    console.group('🔍 Debug Portfolio');
+    console.log('Theme:', currentTheme);
+    console.log('Sound:', soundEnabled);
+    console.log('Particles:', particles.length);
+    console.log('Visit time:', getTimeOnSite());
+    console.log('Analytics:', JSON.parse(localStorage.getItem('portfolioAnalytics') || '{}'));
+    console.groupEnd();
+}
+
+// Fonction globale pour debug dans la console
+window.debugPortfolio = debugPortfolio;
+window.testBotAPI = testBotAPI;
+window.showFallbackStats = showFallbackStats;
+
+// === Gestion des erreurs globales ===
+window.addEventListener('error', (e) => {
+    console.error('Erreur portfolio:', e.error);
+    showNotification('❌', 'Une erreur est survenue', 3000);
+});
+
+// === Initialisation finale ===
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortfolioComplete);
+} else {
+    initPortfolioComplete();
+}
+
+// === Export pour tests (si nécessaire) ===
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        showStats,
+        testBotAPI,
+        generateChatResponse,
+        playSound,
+        showNotification
+    };
 }
