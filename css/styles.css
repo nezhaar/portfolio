@@ -25,8 +25,8 @@ body {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, var(--bg-black) 0%, var(--bg-dark-red) 50%, var(--bg-medium-red) 100%);
     color: var(--text-white);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -51,14 +51,13 @@ body::before {
 .container {
     position: relative;
     z-index: 1;
-    height: 100vh;
+    min-height: 100vh;
     padding: 0.8rem;
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 0.8rem;
     max-width: 1400px;
     margin: 0 auto;
-    overflow: hidden;
 }
 
 /* === PROFILE SIDEBAR === */
@@ -68,12 +67,15 @@ body::before {
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     padding: 1.2rem;
-    height: 100%;
+    min-height: 0;
+    max-height: calc(100vh - 1.6rem);
     overflow-y: auto;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: slideInLeft 0.8s ease-out;
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0.8rem;
 }
 
 @keyframes slideInLeft {
@@ -281,10 +283,9 @@ body::before {
 /* === MAIN CONTENT === */
 .main-content {
     animation: slideInRight 0.8s ease-out;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    min-height: calc(100vh - 1.6rem);
 }
 
 @keyframes slideInRight {
@@ -338,8 +339,6 @@ body::before {
     display: grid;
     gap: 0.8rem;
     flex: 1;
-    overflow-y: auto;
-    padding-right: 0.3rem;
     min-height: 0;
 }
 
@@ -1090,29 +1089,446 @@ body::before {
     }
 }
 
-/* === RESPONSIVE UTILITIES === */
-@media (max-width: 768px) {
-    /* Masquer certains effets pour améliorer les performances sur mobile */
-    .profile-image::before {
-        animation: none;
+/* === HAUTEUR REDUITE === */
+@media (max-height: 700px) {
+    .container {
+        padding: 0.5rem;
+        gap: 0.5rem;
+        min-height: 100vh;
     }
     
-    .container::before {
-        opacity: 0.5;
+    .profile-sidebar {
+        padding: 0.8rem;
+        max-height: calc(100vh - 1rem);
     }
     
-    /* Améliorer la lisibilité sur petit écran */
-    .project-card::before {
-        display: none;
+    .profile-image img {
+        width: 80px;
+        height: 80px;
     }
     
-    /* Optimiser les espacements */
-    .skill-item:last-child {
+    .profile-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .profile-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .profile-location {
+        font-size: 0.8rem;
+    }
+    
+    .contact-button {
+        margin: 0.8rem 0;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .skills-section {
+        margin-top: 0.6rem;
+    }
+    
+    .skills-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .skill-item {
+        margin-bottom: 0.6rem;
+    }
+    
+    .skill-header {
+        font-size: 0.8rem;
+    }
+    
+    .skill-percentage {
+        font-size: 0.75rem;
+    }
+    
+    .main-content {
+        min-height: calc(100vh - 1rem);
+    }
+    
+    .header-section {
+        margin-bottom: 0.6rem;
+    }
+    
+    .header-content {
+        padding: 0.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .section-description {
+        font-size: 0.85rem;
+    }
+    
+    .projects-grid {
+        gap: 0.6rem;
+    }
+    
+    .project-card {
+        padding: 0.8rem;
+    }
+    
+    .project-header {
+        margin-bottom: 0.6rem;
+    }
+    
+    .project-icon {
+        font-size: 1.6rem;
+    }
+    
+    .project-title {
+        font-size: 1rem;
+    }
+    
+    .project-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .project-description {
+        margin-bottom: 0.6rem;
+    }
+    
+    .project-description p {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    .project-features {
+        margin-bottom: 0.6rem;
+    }
+    
+    .features-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .features-list li {
+        font-size: 0.75rem;
+        margin-bottom: 0.2rem;
+        line-height: 1.3;
+    }
+    
+    .project-tech {
+        margin-bottom: 0.6rem;
+    }
+    
+    .tech-tag {
+        font-size: 0.7rem;
+        padding: 0.1rem 0.4rem;
+    }
+    
+    .project-actions {
+        margin-bottom: 0.6rem;
+        gap: 0.5rem;
+    }
+    
+    .action-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .project-image img {
+        max-height: 120px;
+    }
+    
+    .placeholder-content {
+        max-width: 200px;
+    }
+    
+    .placeholder-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .placeholder-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .placeholder-description {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-section {
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+    }
+    
+    .footer-text {
+        font-size: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .footer-links {
+        gap: 1rem;
+    }
+    
+    .footer-link {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-height: 600px) {
+    .container {
+        padding: 0.3rem;
+        gap: 0.3rem;
+    }
+    
+    .profile-sidebar {
+        padding: 0.6rem;
+        max-height: calc(100vh - 0.6rem);
+    }
+    
+    .profile-image {
+        margin-bottom: 0.3rem;
+    }
+    
+    .profile-image img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .profile-name {
+        font-size: 0.95rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .profile-title {
+        font-size: 0.75rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .profile-location {
+        font-size: 0.7rem;
+    }
+    
+    .contact-button {
+        margin: 0.5rem 0;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .skills-section {
+        margin-top: 0.4rem;
+    }
+    
+    .skills-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .skill-item {
+        margin-bottom: 0.4rem;
+    }
+    
+    .skill-header {
+        font-size: 0.7rem;
+    }
+    
+    .skill-percentage {
+        font-size: 0.65rem;
+    }
+    
+    .skill-bar {
+        height: 6px;
+    }
+    
+    .main-content {
+        min-height: calc(100vh - 0.6rem);
+    }
+    
+    .header-section {
+        margin-bottom: 0.4rem;
+    }
+    
+    .header-content {
+        padding: 0.6rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        gap: 0.4rem;
+    }
+    
+    .section-description {
+        font-size: 0.75rem;
+    }
+    
+    .projects-grid {
+        gap: 0.4rem;
+    }
+    
+    .project-card {
+        padding: 0.6rem;
+    }
+    
+    .project-header {
+        margin-bottom: 0.4rem;
+    }
+    
+    .project-icon {
+        font-size: 1.4rem;
+        margin-right: 0.5rem;
+    }
+    
+    .project-title {
+        font-size: 0.9rem;
+    }
+    
+    .project-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .project-description {
+        margin-bottom: 0.4rem;
+    }
+    
+    .project-description p {
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+    
+    .project-features {
+        margin-bottom: 0.4rem;
+    }
+    
+    .features-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .features-list li {
+        font-size: 0.7rem;
+        margin-bottom: 0.1rem;
+        line-height: 1.2;
+    }
+    
+    .project-tech {
+        margin-bottom: 0.4rem;
+    }
+    
+    .tech-tag {
+        font-size: 0.65rem;
+        padding: 0.08rem 0.3rem;
+    }
+    
+    .project-actions {
+        margin-bottom: 0.4rem;
+        gap: 0.3rem;
+    }
+    
+    .action-button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .project-image img {
+        max-height: 100px;
+    }
+    
+    .placeholder-card {
+        min-height: 100px;
+    }
+    
+    .placeholder-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .placeholder-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .placeholder-description {
+        font-size: 0.7rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .footer-section {
+        margin-top: 0.4rem;
+        padding-top: 0.4rem;
+    }
+    
+    .footer-text {
+        font-size: 0.7rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .footer-links {
+        gap: 0.8rem;
+    }
+    
+    .footer-link {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-height: 500px) {
+    .profile-sidebar {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem;
+        position: static;
+        max-height: none;
+    }
+    
+    .profile-header {
+        grid-column: 1;
         margin-bottom: 0;
     }
     
-    .features-list li:last-child {
+    .profile-image {
         margin-bottom: 0;
+    }
+    
+    .skills-section {
+        grid-column: 2;
+        margin-top: 0;
+    }
+    
+    .skills-section:nth-of-type(3) {
+        grid-column: 3;
+    }
+    
+    .contact-button {
+        grid-column: 4;
+        margin: 0;
+        white-space: nowrap;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .project-card {
+        padding: 0.4rem;
+    }
+    
+    .project-description p {
+        font-size: 0.7rem;
+    }
+    
+    .features-list li {
+        font-size: 0.65rem;
+    }
+    
+    .project-image img {
+        max-height: 80px;
     }
 }
 
