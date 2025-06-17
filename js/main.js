@@ -889,8 +889,19 @@ function inviteBot() {
 
 function showStats() {
     playSound('click');
-    showNotification('📊', 'Statistiques du bot : 50+ serveurs, 1000+ utilisateurs actifs');
+
+    fetch('https://the-kraken-bot-d8gw.onrender.com/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            const msg = `📊 Statistiques du bot : ${data.servers}+ serveurs, ${data.users}+ utilisateurs actifs`;
+            showNotification('📊', msg);
+        })
+        .catch(error => {
+            console.error('Erreur stats:', error);
+            showNotification('📊', "Impossible de récupérer les statistiques du bot.");
+        });
 }
+
 
 function sharePortfolio() {
     playSound('click');
