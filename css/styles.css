@@ -49,13 +49,14 @@ body::before {
 .container {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
-    padding: 2rem;
+    height: 100vh;
+    padding: 1rem;
     display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 2rem;
+    grid-template-columns: 320px 1fr;
+    gap: 1rem;
     max-width: 1400px;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 /* === PROFILE SIDEBAR === */
@@ -63,13 +64,14 @@ body::before {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 2rem;
-    height: fit-content;
-    position: sticky;
-    top: 2rem;
+    border-radius: 20px;
+    padding: 1.5rem;
+    height: 100%;
+    overflow-y: auto;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: slideInLeft 0.8s ease-out;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideInLeft {
@@ -85,7 +87,8 @@ body::before {
 
 .profile-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
 }
 
 .profile-image {
@@ -110,8 +113,8 @@ body::before {
 }
 
 .profile-image img {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--bg-black);
@@ -123,7 +126,7 @@ body::before {
 }
 
 .profile-name {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-red), var(--light-red));
     -webkit-background-clip: text;
@@ -150,8 +153,8 @@ body::before {
 
 .contact-button {
     display: block;
-    margin: 2rem 0;
-    padding: 1rem 2rem;
+    margin: 1.5rem 0;
+    padding: 0.8rem 1.5rem;
     background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
     color: white;
     text-decoration: none;
@@ -162,6 +165,7 @@ body::before {
     box-shadow: 0 8px 20px var(--shadow-red);
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .contact-button::before {
@@ -190,14 +194,16 @@ body::before {
 
 /* === SKILLS SECTION === */
 .skills-section {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
+    flex: 1;
+    min-height: 0;
 }
 
 .skills-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-white);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -215,7 +221,7 @@ body::before {
 }
 
 .skill-item {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .skill-header {
@@ -272,6 +278,10 @@ body::before {
 /* === MAIN CONTENT === */
 .main-content {
     animation: slideInRight 0.8s ease-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 @keyframes slideInRight {
@@ -286,7 +296,8 @@ body::before {
 }
 
 .header-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 .header-content {
@@ -294,18 +305,18 @@ body::before {
     backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
 }
 
 .section-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-red), var(--light-red));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -313,7 +324,7 @@ body::before {
 }
 
 .section-description {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text-light);
     max-width: 600px;
     margin: 0 auto;
@@ -322,7 +333,10 @@ body::before {
 /* === PROJECTS GRID === */
 .projects-grid {
     display: grid;
-    gap: 2rem;
+    gap: 1rem;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
 }
 
 .project-card {
@@ -330,10 +344,11 @@ body::before {
     backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    height: fit-content;
 }
 
 .project-card::before {
@@ -367,11 +382,11 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .project-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-right: 1rem;
 }
 
@@ -380,7 +395,7 @@ body::before {
 }
 
 .project-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--text-white);
     margin-bottom: 0.25rem;
@@ -388,7 +403,7 @@ body::before {
 
 .project-subtitle {
     color: var(--text-gray);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .project-status {
@@ -412,22 +427,23 @@ body::before {
 
 /* === PROJECT CONTENT === */
 .project-description {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .project-description p {
     color: var(--text-light);
-    line-height: 1.7;
+    line-height: 1.6;
+    font-size: 0.95rem;
 }
 
 .project-features {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .features-title {
     color: var(--text-white);
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
     font-weight: 600;
 }
 
@@ -438,28 +454,29 @@ body::before {
 
 .features-list li {
     color: var(--text-gray);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     padding-left: 0.5rem;
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 0.9rem;
 }
 
 /* === TECH STACK === */
 .project-tech {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .tech-stack {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .tech-tag {
     background: rgba(255, 0, 0, 0.1);
     color: var(--primary-red);
-    padding: 0.25rem 0.75rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 12px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     border: 1px solid rgba(255, 0, 0, 0.2);
 }
@@ -467,16 +484,16 @@ body::before {
 /* === PROJECT ACTIONS === */
 .project-actions {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .action-button {
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 12px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
     border: none;
     cursor: pointer;
@@ -514,11 +531,14 @@ body::before {
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
+    margin-bottom: 0;
 }
 
 .project-image img {
     width: 100%;
     height: auto;
+    max-height: 200px;
+    object-fit: cover;
     transition: transform 0.3s ease;
     border-radius: 12px;
 }
@@ -552,31 +572,32 @@ body::before {
 .project-card.placeholder {
     border: 2px dashed var(--glass-border);
     text-align: center;
-    min-height: 200px;
+    min-height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .placeholder-content {
-    max-width: 300px;
+    max-width: 250px;
 }
 
 .placeholder-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
     opacity: 0.7;
 }
 
 .placeholder-title {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
     color: var(--text-light);
 }
 
 .placeholder-description {
     color: var(--text-gray);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
 }
 
 .loading-dots {
@@ -603,9 +624,10 @@ body::before {
 
 /* === FOOTER === */
 .footer-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--glass-border);
+    flex-shrink: 0;
 }
 
 .footer-content {
@@ -614,19 +636,21 @@ body::before {
 
 .footer-text {
     color: var(--text-gray);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .footer-links {
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .footer-link {
     color: var(--text-light);
     text-decoration: none;
     transition: color 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .footer-link:hover {
