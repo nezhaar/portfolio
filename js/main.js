@@ -46,7 +46,6 @@ function initPortfolio() {
 function initializeTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     updateThemeIcon();
-    updateSoundIcon(); // Initialiser l'icône son aussi
 }
 
 function toggleTheme() {
@@ -55,7 +54,7 @@ function toggleTheme() {
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
     playSound('click');
-    showNotification('🎨', `Thème ${currentThème === 'dark' ? 'sombre' : 'clair'} activé`);
+    showNotification('🎨', `Thème ${currentTheme === 'dark' ? 'sombre' : 'clair'} activé`);
 }
 
 function updateThemeIcon() {
@@ -81,13 +80,18 @@ function toggleSound() {
 
 function updateSoundIcon() {
     const soundIcon = document.querySelector('.sound-icon');
+    const soundToggle = document.querySelector('.sound-toggle');
     
-    if (soundIcon) {
+    if (soundIcon && soundToggle) {
         // Changer directement le contenu de l'icône
         soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        
+        // Optionnel : ajouter/enlever une classe pour le style
+        soundToggle.classList.toggle('muted', !soundEnabled);
     }
-    
-    // Ajouter/enlever une classe pour le style
+}
+
+function updateSoundIcon() {
     const soundToggle = document.querySelector('.sound-toggle');
     if (soundToggle) {
         soundToggle.classList.toggle('muted', !soundEnabled);
@@ -556,10 +560,7 @@ function processTerminalCommand(command, output) {
 - date: Date actuelle
 - whoami: Qui suis-je
 - matrix: Mode Matrix
-- joke: Blague aléatoire
-- ls: Lister les fichiers
-- pwd: Répertoire courant
-- neofetch: Infos système`,
+- joke: Blague aléatoire`,
         'about': 'Morgan VERSPEEK - Développeur Web passionné de 22 ans basé à Tourcoing.',
         'skills': 'HTML/CSS: 75% | JavaScript: 60% | PHP: 55% | SQL: 65%',
         'projects': '1. The Kraken - Bot Discord avancé\n2. Portfolio Interactif\n3. Projets à venir...',
@@ -624,6 +625,14 @@ function processTerminalCommand(command, output) {
     
     output.appendChild(response);
     output.scrollTop = output.scrollHeight;
+}
+
+// Fonction utilitaire pour obtenir le temps de session
+function getTimeOnSite() {
+    const elapsed = Date.now() - visitStartTime;
+    const minutes = Math.floor(elapsed / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function getRandomJoke() {
@@ -945,26 +954,27 @@ function addChatMessage(content, type) {
 }
 
 function generateChatResponse(message) {
-    const responses = {
-        'hello': 'Bonjour ! Comment puis-je vous aider ?',
-        'bonjour': 'Salut ! Que puis-je faire pour vous ?',
-        'projet': 'Je travaille sur des bots Discord et des sites web. Quel type de projet vous intéresse ?',
-        'prix': 'Les tarifs dépendent de la complexité. Contactez-moi pour un devis personnalisé !',
-        'contact': 'Vous pouvez me contacter via le formulaire ou par Discord.',
-        'merci': 'De rien ! N\'hésitez pas si vous avez d\'autres questions.',
-        'au revoir': 'À bientôt ! Merci de votre visite.'
-    };
-    
+    const patterns = [
+        { regex: /bonjour|salut|hello|hey/i, response: "👋 Bonjour ! Comment puis-je vous aider ?" },
+        { regex: /aide|help/i, response: "🛟 Je suis là pour vous aider. Que cherchez-vous exactement ?" },
+        { regex: /présente.*morgan|presentation|qui.*morgan|parle de morgan|présente toi/i, response: "🧑‍💻 Morgan VERSPEEK est un développeur web passionné, spécialisé en JavaScript, Discord.js, et interfaces modernes. Il crée des projets dynamiques comme 'The Kraken'." },
+        { regex: /contact/i, response: "📧 Vous pouvez contacter Morgan via le formulaire ou sur Discord : @morgan#1234." },
+        { regex: /projet/i, response: "💼 Morgan travaille sur des bots Discord, sites web interactifs et applications modernes." },
+        { regex: /prix|tarif|coût|budget/i, response: "💰 Les tarifs varient selon le projet. Contactez-moi pour un devis personnalisé." },
+        { regex: /merci|thanks/i, response: "🙏 Avec plaisir ! N’hésitez pas si vous avez d’autres questions." },
+        { regex: /au revoir|bye|à bientôt/i, response: "👋 À bientôt ! Merci de votre visite." }
+    ];
+
     const lowerMessage = message.toLowerCase();
-    
-    for (const [key, response] of Object.entries(responses)) {
-        if (lowerMessage.includes(key)) {
+    for (const { regex, response } of patterns) {
+        if (regex.test(lowerMessage)) {
             return response;
         }
     }
-    
-    return 'Merci pour votre message ! Pour une réponse détaillée, n\'hésitez pas à utiliser le formulaire de contact.';
+
+    return "Merci pour votre message ! Pour une réponse détaillée, n'hésitez pas à utiliser le formulaire de contact.";
 }
+
 
 // Style CSS pour l'animation ripple
 const style = document.createElement('style');
