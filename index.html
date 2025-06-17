@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Morgan VERSPEEK - Développeur Web Full Stack</title>
     
     <!-- SEO amélioré -->
@@ -17,12 +17,19 @@
     <meta property="og:url" content="https://nezhaar.github.io/portfolio/">
     <meta property="og:type" content="website">
     
+    <!-- Mobile optimisation -->
+    <meta name="theme-color" content="#ff0000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Portfolio Morgan">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <!-- Favicon amélioré -->
     <link rel="icon" type="image/png" href="./image/nzr-favicon.png">
     <link rel="shortcut icon" type="image/png" href="./image/nzr-favicon.png">
     <link rel="apple-touch-icon" href="./image/nzr-favicon.png">
     
-    <!-- Fonts -->
+    <!-- Fonts avec preload pour performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -32,77 +39,79 @@
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff0000">
+    
+    <!-- Preload des images critiques -->
+    <link rel="preload" as="image" href="./image/profile.png">
 </head>
 <body>
-    <!-- Particules d'arrière-plan -->
-    <div id="particles-container"></div>
+    <!-- Particules d'arrière-plan (masquées sur mobile) -->
+    <div id="particles-container" aria-hidden="true"></div>
     
-    <!-- Curseur personnalisé -->
-    <div class="custom-cursor"></div>
-    <div class="cursor-trail"></div>
+    <!-- Curseur personnalisé (desktop uniquement) -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="cursor-trail" aria-hidden="true"></div>
     
     <!-- Toggle thème -->
-    <div class="theme-toggle" onclick="toggleTheme()" title="Changer de thème">
-        <span class="theme-icon">🌙</span>
-    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Changer de thème" aria-label="Basculer entre thème sombre et clair">
+        <span class="theme-icon" aria-hidden="true">🌙</span>
+    </button>
     
     <!-- Toggle son -->
-    <div class="sound-toggle" onclick="toggleSound()" title="Activer/Désactiver les sons">
-        <span class="sound-icon">🔊</span>
-    </div>
+    <button class="sound-toggle" onclick="toggleSound()" title="Activer/Désactiver les sons" aria-label="Activer ou désactiver les effets sonores">
+        <span class="sound-icon" aria-hidden="true">🔊</span>
+    </button>
     
     <!-- Container principal -->
     <div class="container">
         <!-- Sidebar Profile -->
-        <aside class="profile-sidebar">
+        <aside class="profile-sidebar" role="complementary">
             <div class="profile-header">
                 <div class="profile-image">
-                    <img src="./image/profile.png" alt="Morgan VERSPEEK" loading="lazy">
-                    <div class="status-dot online"></div>
+                    <img src="./image/profile.png" alt="Photo de profil de Morgan VERSPEEK" loading="eager">
+                    <div class="status-dot online" aria-label="En ligne"></div>
                 </div>
-                <h1 class="profile-name typing-animation">Morgan VERSPEEK</h1>
+                <h1 class="profile-name">Morgan VERSPEEK</h1>
                 <p class="profile-title">Développeur Web</p>
                 <p class="profile-location">
-                    <span class="location-icon">📍</span>
-                    22 ans • Tourcoing
+                    <span class="location-icon" aria-hidden="true">📍</span>
+                    <span>22 ans • Tourcoing</span>
                 </p>
                 
-                <!-- Statistiques ajoutées -->
-                <div class="profile-stats">
+                <!-- Statistiques -->
+                <div class="profile-stats" role="group" aria-label="Statistiques du portfolio">
                     <div class="stat-item">
-                        <span class="stat-number" data-target="3">0</span>
+                        <span class="stat-number" data-target="3" aria-label="3 projets">0</span>
                         <span class="stat-label">Projets</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number" data-target="1">0</span>
+                        <span class="stat-number" data-target="1" aria-label="1 année d'expérience">0</span>
                         <span class="stat-label">Années</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number" data-target="99">0</span>
+                        <span class="stat-number" data-target="99" aria-label="99% de qualité">0</span>
                         <span class="stat-label">% Qualité</span>
                     </div>
                 </div>
             </div>
 
-            <a href="contact.html" class="contact-button hover-effect">
-                <span class="button-icon">💬</span>
-                Me Contacter
+            <a href="contact.html" class="contact-button hover-effect" aria-label="Aller à la page de contact">
+                <span class="button-icon" aria-hidden="true">💬</span>
+                <span>Me Contacter</span>
             </a>
 
             <!-- Skills Front-end -->
-            <div class="skills-section">
-                <h3 class="skills-title">
-                    <span class="title-icon">🎨</span>
-                    Front-end
+            <div class="skills-section" role="group" aria-labelledby="frontend-title">
+                <h3 class="skills-title" id="frontend-title">
+                    <span class="title-icon" aria-hidden="true">🎨</span>
+                    <span>Front-end</span>
                 </h3>
                 
                 <div class="skill-item">
                     <div class="skill-header">
                         <span class="skill-name">HTML</span>
-                        <span class="skill-percentage">75%</span>
+                        <span class="skill-percentage" aria-label="75 pourcent">75%</span>
                     </div>
-                    <div class="skill-bar">
+                    <div class="skill-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Compétence HTML 75%">
                         <div class="skill-progress skill-html" data-width="75"></div>
                     </div>
                 </div>
@@ -110,9 +119,9 @@
                 <div class="skill-item">
                     <div class="skill-header">
                         <span class="skill-name">CSS</span>
-                        <span class="skill-percentage">70%</span>
+                        <span class="skill-percentage" aria-label="70 pourcent">70%</span>
                     </div>
-                    <div class="skill-bar">
+                    <div class="skill-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Compétence CSS 70%">
                         <div class="skill-progress skill-css" data-width="70"></div>
                     </div>
                 </div>
@@ -120,27 +129,27 @@
                 <div class="skill-item">
                     <div class="skill-header">
                         <span class="skill-name">JavaScript</span>
-                        <span class="skill-percentage">60%</span>
+                        <span class="skill-percentage" aria-label="60 pourcent">60%</span>
                     </div>
-                    <div class="skill-bar">
+                    <div class="skill-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Compétence JavaScript 60%">
                         <div class="skill-progress skill-js" data-width="60"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Skills Back-end -->
-            <div class="skills-section">
-                <h3 class="skills-title">
-                    <span class="title-icon">⚙️</span>
-                    Back-end
+            <div class="skills-section" role="group" aria-labelledby="backend-title">
+                <h3 class="skills-title" id="backend-title">
+                    <span class="title-icon" aria-hidden="true">⚙️</span>
+                    <span>Back-end</span>
                 </h3>
                 
                 <div class="skill-item">
                     <div class="skill-header">
                         <span class="skill-name">SQL</span>
-                        <span class="skill-percentage">65%</span>
+                        <span class="skill-percentage" aria-label="65 pourcent">65%</span>
                     </div>
-                    <div class="skill-bar">
+                    <div class="skill-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Compétence SQL 65%">
                         <div class="skill-progress skill-sql" data-width="65"></div>
                     </div>
                 </div>
@@ -148,36 +157,36 @@
                 <div class="skill-item">
                     <div class="skill-header">
                         <span class="skill-name">PHP</span>
-                        <span class="skill-percentage">55%</span>
+                        <span class="skill-percentage" aria-label="55 pourcent">55%</span>
                     </div>
-                    <div class="skill-bar">
+                    <div class="skill-bar" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" aria-label="Compétence PHP 55%">
                         <div class="skill-progress skill-php" data-width="55"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Actions rapides ajoutées -->
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="downloadCV()" title="Télécharger CV">
-                    📄 CV
+            <!-- Actions rapides -->
+            <div class="quick-actions" role="group" aria-label="Actions rapides">
+                <button class="quick-btn" onclick="downloadCV()" title="Télécharger le CV" aria-label="Télécharger le CV en PDF">
+                    <span aria-hidden="true">📄</span> CV
                 </button>
-                <button class="quick-btn" onclick="openTerminal()" title="Terminal">
-                    💻 CMD
+                <button class="quick-btn" onclick="openTerminal()" title="Ouvrir le terminal" aria-label="Ouvrir le terminal interactif">
+                    <span aria-hidden="true">💻</span> CMD
                 </button>
-                <button class="quick-btn" onclick="openGame()" title="Mini-jeu">
-                    🎮 Game
+                <button class="quick-btn" onclick="openGame()" title="Lancer le mini-jeu" aria-label="Jouer au jeu Snake">
+                    <span aria-hidden="true">🎮</span> Game
                 </button>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" role="main">
             <!-- Header Section -->
             <header class="header-section">
                 <div class="header-content">
                     <h2 class="section-title">
-                        <span class="title-icon">🚀</span>
-                        Mes Projets
+                        <span class="title-icon" aria-hidden="true">🚀</span>
+                        <span>Mes Projets</span>
                     </h2>
                     <p class="section-description">
                         Découvrez mes créations et réalisations techniques
@@ -186,11 +195,11 @@
             </header>
 
             <!-- Projects Grid -->
-            <section class="projects-grid">
+            <section class="projects-grid" role="region" aria-label="Liste des projets">
                 <!-- Project Card -->
                 <article class="project-card featured">
                     <div class="project-header">
-                        <div class="project-icon">🤖</div>
+                        <div class="project-icon" aria-hidden="true">🤖</div>
                         <div class="project-info">
                             <h3 class="project-title">The Kraken</h3>
                             <p class="project-subtitle">Bot Discord Avancé</p>
@@ -210,41 +219,41 @@
                     <div class="project-features">
                         <h4 class="features-title">Fonctionnalités principales :</h4>
                         <ul class="features-list">
-                            <li>🛡️ Système de modération complet (kick, ban, mute, clear)</li>
-                            <li>🎵 Lecteur musical intégré avec commandes avancées</li>
-                            <li>🧠 Base de données MongoDB avec logs détaillés</li>
-                            <li>⚡ Commandes slash pour une UX moderne</li>
-                            <li>🤖 Intégration GPT pour réponses intelligentes</li>
+                            <li><span aria-hidden="true">🛡️</span> Système de modération complet (kick, ban, mute, clear)</li>
+                            <li><span aria-hidden="true">🎵</span> Lecteur musical intégré avec commandes avancées</li>
+                            <li><span aria-hidden="true">🧠</span> Base de données MongoDB avec logs détaillés</li>
+                            <li><span aria-hidden="true">⚡</span> Commandes slash pour une UX moderne</li>
+                            <li><span aria-hidden="true">🤖</span> Intégration GPT pour réponses intelligentes</li>
                         </ul>
                     </div>
 
                     <div class="project-tech">
-                        <div class="tech-stack">
-                            <span class="tech-tag">JavaScript</span>
-                            <span class="tech-tag">Discord.js</span>
-                            <span class="tech-tag">MongoDB</span>
-                            <span class="tech-tag">Node.js</span>
-                            <span class="tech-tag">GPT API</span>
+                        <div class="tech-stack" role="list" aria-label="Technologies utilisées">
+                            <span class="tech-tag" role="listitem">JavaScript</span>
+                            <span class="tech-tag" role="listitem">Discord.js</span>
+                            <span class="tech-tag" role="listitem">MongoDB</span>
+                            <span class="tech-tag" role="listitem">Node.js</span>
+                            <span class="tech-tag" role="listitem">GPT API</span>
                         </div>
                     </div>
 
                     <div class="project-actions">
-                        <a href="https://github.com/sakura-haruk/the-kraken" target="_blank" class="action-button primary">
-                            <span class="button-icon">💻</span>
-                            Code Source
+                        <a href="https://github.com/sakura-haruk/the-kraken" target="_blank" rel="noopener noreferrer" class="action-button primary" aria-label="Voir le code source sur GitHub">
+                            <span class="button-icon" aria-hidden="true">💻</span>
+                            <span>Code Source</span>
                         </a>
-                        <button class="action-button secondary" onclick="inviteBot()">
-                            <span class="button-icon">🤖</span>
-                            Site du bot
+                        <button class="action-button secondary" onclick="inviteBot()" aria-label="Visiter le site du bot">
+                            <span class="button-icon" aria-hidden="true">🤖</span>
+                            <span>Site du bot</span>
                         </button>
-                        <button class="action-button secondary" onclick="showStats()">
-                            <span class="button-icon">📊</span>
-                            Statistiques
+                        <button class="action-button secondary" onclick="showStats()" aria-label="Voir les statistiques du bot">
+                            <span class="button-icon" aria-hidden="true">📊</span>
+                            <span>Statistiques</span>
                         </button>
                     </div>
 
-                    <div class="project-image" onclick="openImageModal('./image/kraken-preview.png', 'The Kraken Interface')">
-                        <img src="./image/kraken-preview.png" alt="Aperçu du bot Discord The Kraken" loading="lazy">
+                    <div class="project-image" onclick="openImageModal('./image/kraken-preview.png', 'The Kraken Interface')" role="button" tabindex="0" aria-label="Voir l'aperçu du bot en grand" onkeydown="if(event.key==='Enter'||event.key===' ')openImageModal('./image/kraken-preview.png', 'The Kraken Interface')">
+                        <img src="./image/kraken-preview.png" alt="Capture d'écran de l'interface du bot Discord The Kraken" loading="lazy">
                         <div class="image-overlay">
                             <span class="overlay-text">Voir en grand</span>
                         </div>
@@ -254,7 +263,7 @@
                 <!-- Nouveau projet Portfolio -->
                 <article class="project-card">
                     <div class="project-header">
-                        <div class="project-icon">🌐</div>
+                        <div class="project-icon" aria-hidden="true">🌐</div>
                         <div class="project-info">
                             <h3 class="project-title">Portfolio Interactif</h3>
                             <p class="project-subtitle">Site Web Personnel</p>
@@ -272,22 +281,22 @@
                     </div>
 
                     <div class="project-tech">
-                        <div class="tech-stack">
-                            <span class="tech-tag">HTML5</span>
-                            <span class="tech-tag">CSS3</span>
-                            <span class="tech-tag">JavaScript</span>
-                            <span class="tech-tag">PWA</span>
+                        <div class="tech-stack" role="list" aria-label="Technologies utilisées">
+                            <span class="tech-tag" role="listitem">HTML5</span>
+                            <span class="tech-tag" role="listitem">CSS3</span>
+                            <span class="tech-tag" role="listitem">JavaScript</span>
+                            <span class="tech-tag" role="listitem">PWA</span>
                         </div>
                     </div>
 
                     <div class="project-actions">
-                        <a href="https://github.com/nezhaar/portfolio" target="_blank" class="action-button primary">
-                            <span class="button-icon">💻</span>
-                            Code Source
+                        <a href="https://github.com/nezhaar/portfolio" target="_blank" rel="noopener noreferrer" class="action-button primary" aria-label="Voir le code source du portfolio sur GitHub">
+                            <span class="button-icon" aria-hidden="true">💻</span>
+                            <span>Code Source</span>
                         </a>
-                        <button class="action-button secondary" onclick="sharePortfolio()">
-                            <span class="button-icon">📤</span>
-                            Partager
+                        <button class="action-button secondary" onclick="sharePortfolio()" aria-label="Partager le portfolio">
+                            <span class="button-icon" aria-hidden="true">📤</span>
+                            <span>Partager</span>
                         </button>
                     </div>
                 </article>
@@ -295,26 +304,26 @@
                 <!-- Future Project Placeholder -->
                 <article class="project-card placeholder">
                     <div class="placeholder-content">
-                        <div class="placeholder-icon animate-float">💡</div>
+                        <div class="placeholder-icon animate-float" aria-hidden="true">💡</div>
                         <h3 class="placeholder-title">Projet à venir</h3>
                         <p class="placeholder-description">
                             De nouveaux projets passionnants sont en cours de développement...
                         </p>
                         <div class="placeholder-animation">
-                            <div class="loading-dots">
+                            <div class="loading-dots" aria-label="Chargement en cours">
                                 <span></span>
                                 <span></span>
                                 <span></span>
                             </div>
                         </div>
-                        <!-- Compteur ajouté -->
-                        <div class="countdown">
+                        <!-- Compteur -->
+                        <div class="countdown" aria-label="Temps restant avant le prochain projet">
                             <div class="countdown-item">
-                                <span id="days">--</span>
+                                <span id="days" aria-label="jours">--</span>
                                 <label>Jours</label>
                             </div>
                             <div class="countdown-item">
-                                <span id="hours">--</span>
+                                <span id="hours" aria-label="heures">--</span>
                                 <label>Heures</label>
                             </div>
                         </div>
@@ -322,40 +331,42 @@
                 </article>
             </section>
 
-            <!-- Footer amélioré -->
-            <footer class="footer-section">
+            <!-- Footer -->
+            <footer class="footer-section" role="contentinfo">
                 <div class="footer-content">
                     <p class="footer-text">
-                        💼 Ouvert aux opportunités • 📧 Réponse rapide garantie • ⭐ Freelance disponible
+                        <span aria-hidden="true">💼</span> Ouvert aux opportunités • 
+                        <span aria-hidden="true">📧</span> Réponse rapide garantie • 
+                        <span aria-hidden="true">⭐</span> Freelance disponible
                     </p>
-                    <div class="footer-links">
-                        <a href="https://github.com/sakura-haruk" target="_blank" class="footer-link">
-                            💻 GitHub
+                    <div class="footer-links" role="navigation" aria-label="Liens du pied de page">
+                        <a href="https://github.com/sakura-haruk" target="_blank" rel="noopener noreferrer" class="footer-link" aria-label="Visiter mon profil GitHub">
+                            <span aria-hidden="true">💻</span> GitHub
                         </a>
-                        <a href="contact.html" class="footer-link">
-                            📞 Contact
+                        <a href="contact.html" class="footer-link" aria-label="Aller à la page de contact">
+                            <span aria-hidden="true">📞</span> Contact
                         </a>
-                        <button class="footer-link" onclick="showAnalytics()">
-                            📊 Analytics
+                        <button class="footer-link" onclick="showAnalytics()" aria-label="Voir les statistiques du site">
+                            <span aria-hidden="true">📊</span> Analytics
                         </button>
-                        <button class="footer-link" onclick="showAbout()">
-                            👤 À propos
+                        <button class="footer-link" onclick="showAbout()" aria-label="En savoir plus sur moi">
+                            <span aria-hidden="true">👤</span> À propos
                         </button>
                     </div>
                 </div>
                 
                 <!-- Easter egg -->
-                <div class="konami-trigger" onclick="checkKonami()">
+                <div class="konami-trigger" onclick="checkKonami()" role="button" tabindex="0" aria-label="Code secret Konami" onkeydown="if(event.key==='Enter'||event.key===' ')checkKonami()">
                     <span class="secret-hint">konami code</span>
                 </div>
             </footer>
         </main>
     </div>
 
-    <!-- Modal Image améliorée -->
-    <div id="imageModal" class="modal">
+    <!-- Modal Image -->
+    <div id="imageModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <button class="close-modal" onclick="closeModal()" aria-label="Fermer la fenêtre">&times;</button>
             <img id="modalImage" src="" alt="Image agrandie">
             <div class="modal-info">
                 <h3 id="modalTitle"></h3>
@@ -365,39 +376,39 @@
     </div>
 
     <!-- Terminal Modal -->
-    <div id="terminalModal" class="modal">
+    <div id="terminalModal" class="modal" role="dialog" aria-labelledby="terminal-title" aria-hidden="true">
         <div class="terminal-window">
             <div class="terminal-header">
                 <div class="terminal-controls">
-                    <span class="terminal-btn close" onclick="closeTerminal()"></span>
-                    <span class="terminal-btn minimize"></span>
-                    <span class="terminal-btn maximize"></span>
+                    <button class="terminal-btn close" onclick="closeTerminal()" aria-label="Fermer le terminal"></button>
+                    <button class="terminal-btn minimize" aria-label="Réduire le terminal"></button>
+                    <button class="terminal-btn maximize" aria-label="Agrandir le terminal"></button>
                 </div>
-                <div class="terminal-title">morgan@portfolio:~$</div>
+                <div class="terminal-title" id="terminal-title">morgan@portfolio:~$</div>
             </div>
             <div class="terminal-body">
-                <div id="terminalOutput">
+                <div id="terminalOutput" role="log" aria-live="polite" aria-label="Sortie du terminal">
                     <div class="terminal-line">Bienvenue dans le portfolio terminal de Morgan!</div>
                     <div class="terminal-line">Tapez 'help' pour voir les commandes disponibles.</div>
                 </div>
                 <div class="terminal-input-line">
                     <span class="terminal-prompt">morgan@portfolio:~$ </span>
-                    <input type="text" id="terminalInput" class="terminal-input" autocomplete="off">
+                    <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" aria-label="Entrée de commande terminal" placeholder="Tapez une commande...">
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Game Modal (Snake) -->
-    <div id="gameModal" class="modal">
+    <div id="gameModal" class="modal" role="dialog" aria-labelledby="game-title" aria-hidden="true">
         <div class="game-window">
             <div class="game-header">
-                <h3>🐍 Snake Game - Score: <span id="gameScore">0</span></h3>
-                <button onclick="closeGame()" class="close-game">×</button>
+                <h3 id="game-title"><span aria-hidden="true">🐍</span> Snake Game - Score: <span id="gameScore">0</span></h3>
+                <button onclick="closeGame()" class="close-game" aria-label="Fermer le jeu">×</button>
             </div>
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <canvas id="gameCanvas" width="400" height="400" aria-label="Zone de jeu Snake"></canvas>
             <div class="game-controls">
-                <p>Utilisez les flèches pour diriger le serpent rouge</p>
+                <p>Utilisez les flèches directionnelles ou glissez votre doigt pour diriger le serpent rouge</p>
                 <button onclick="startGame()" id="startGameBtn" class="game-btn">Démarrer</button>
                 <button onclick="pauseGame()" id="pauseGameBtn" class="game-btn">Pause</button>
             </div>
@@ -405,78 +416,87 @@
     </div>
 
     <!-- Analytics Modal -->
-    <div id="analyticsModal" class="modal">
+    <div id="analyticsModal" class="modal" role="dialog" aria-labelledby="analytics-title" aria-hidden="true">
         <div class="analytics-window">
             <div class="analytics-header">
-                <h3>📊 Statistiques du Portfolio</h3>
-                <span class="close-modal" onclick="closeAnalytics()">&times;</span>
+                <h3 id="analytics-title"><span aria-hidden="true">📊</span> Statistiques du Portfolio</h3>
+                <button class="close-modal" onclick="closeAnalytics()" aria-label="Fermer les statistiques">&times;</button>
             </div>
             <div class="analytics-content">
                 <div class="analytics-card">
-                    <div class="analytics-icon">👁️</div>
+                    <div class="analytics-icon" aria-hidden="true">👁️</div>
                     <div class="analytics-data">
-                        <span class="analytics-number" id="visitorCount">--</span>
+                        <span class="analytics-number" id="visitorCount" aria-label="nombre de visiteurs">--</span>
                         <span class="analytics-label">Visiteurs uniques</span>
                     </div>
                 </div>
                 <div class="analytics-card">
-                    <div class="analytics-icon">📱</div>
+                    <div class="analytics-icon" aria-hidden="true">📱</div>
                     <div class="analytics-data">
-                        <span class="analytics-number" id="deviceType">--</span>
+                        <span class="analytics-number" id="deviceType" aria-label="type d'appareil">--</span>
                         <span class="analytics-label">Appareil détecté</span>
                     </div>
                 </div>
                 <div class="analytics-card">
-                    <div class="analytics-icon">🌍</div>
+                    <div class="analytics-icon" aria-hidden="true">🌍</div>
                     <div class="analytics-data">
-                        <span class="analytics-number" id="userLocation">--</span>
+                        <span class="analytics-number" id="userLocation" aria-label="localisation">--</span>
                         <span class="analytics-label">Localisation</span>
                     </div>
                 </div>
             </div>
             <div class="analytics-chart">
                 <h4>Temps passé sur le site</h4>
-                <div class="time-display" id="timeOnSite">00:00</div>
+                <div class="time-display" id="timeOnSite" aria-label="temps passé sur le site">00:00</div>
             </div>
         </div>
     </div>
 
     <!-- Chat Widget -->
-    <div id="chatWidget" class="chat-widget minimized">
-        <div class="chat-header" onclick="toggleChat()">
-            <span class="chat-icon">💬</span>
+    <div id="chatWidget" class="chat-widget minimized" role="complementary" aria-label="Widget de chat d'assistance">
+        <div class="chat-header" onclick="toggleChat()" role="button" tabindex="0" aria-label="Ouvrir ou fermer le chat" onkeydown="if(event.key==='Enter'||event.key===' ')toggleChat()">
+            <span class="chat-icon" aria-hidden="true">💬</span>
             <span class="chat-title">Assistance</span>
-            <div class="status-dot online"></div>
+            <div class="status-dot online" aria-label="En ligne"></div>
         </div>
-        <div class="chat-messages" id="chatMessages">
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Messages du chat">
             <div class="message bot">
                 <div class="message-content">
-                    Bonjour ! Comment puis-je vous aider ? 😊
+                    Bonjour ! Comment puis-je vous aider ? <span aria-hidden="true">😊</span>
                 </div>
                 <div class="message-time">Maintenant</div>
             </div>
         </div>
         <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Tapez votre message..." onkeypress="handleChatEnter(event)">
-            <button onclick="sendMessage()">📤</button>
+            <input type="text" id="chatInput" placeholder="Tapez votre message..." onkeypress="handleChatEnter(event)" aria-label="Tapez votre message">
+            <button onclick="sendMessage()" aria-label="Envoyer le message"><span aria-hidden="true">📤</span></button>
         </div>
     </div>
 
     <!-- Notification système -->
-    <div id="notification" class="notification hidden">
+    <div id="notification" class="notification hidden" role="alert" aria-live="assertive">
         <div class="notification-content">
-            <span class="notification-icon"></span>
+            <span class="notification-icon" aria-hidden="true"></span>
             <span class="notification-text"></span>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
+    
+    <!-- Service Worker pour PWA -->
     <script>
-        // Initialisation immédiate
-        document.addEventListener('DOMContentLoaded', function() {
-            initPortfolio();
-        });
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
