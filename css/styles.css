@@ -146,9 +146,16 @@ body:hover .cursor-trail {
     transition: var(--transition);
 }
 
+/* === CORRECTION TOGGLE SON === */
+/* Quand le son est désactivé, on grise l'icône */
+.sound-toggle.muted .sound-icon {
+    filter: grayscale(100%) brightness(0.5);
+    opacity: 0.6;
+}
+
+/* Supprimer l'ancien comportement avec l'icône double */
 .sound-toggle.muted .sound-icon::after {
-    content: '🔇';
-    position: absolute;
+    display: none;
 }
 
 /* === LAYOUT === */
@@ -936,19 +943,103 @@ body:hover .cursor-trail {
     to { transform: scale(1); opacity: 1; }
 }
 
-.close-modal {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    color: white;
-    font-size: 2rem;
+/* === CROIX PERSONNALISÉE === */
+.close-modal,
+.close-game,
+.close-analytics {
+    position: relative;
+    background: transparent;
+    border: none;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
-    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    padding: 0;
+    font-size: 0; /* Cacher le caractère × */
+    color: transparent;
 }
 
-.close-modal:hover {
-    color: var(--primary-red);
-    transform: scale(1.2);
+/* Créer la croix avec des pseudo-éléments */
+.close-modal::before,
+.close-modal::after,
+.close-game::before,
+.close-game::after,
+.close-analytics::before,
+.close-analytics::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 2px;
+    background: var(--text-white);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.close-modal::before,
+.close-game::before,
+.close-analytics::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-modal::after,
+.close-game::after,
+.close-analytics::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Effet hover */
+.close-modal:hover,
+.close-game:hover,
+.close-analytics:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+.close-modal:hover::before,
+.close-modal:hover::after,
+.close-game:hover::before,
+.close-game:hover::after,
+.close-analytics:hover::before,
+.close-analytics:hover::after {
+    background: var(--primary-red);
+    width: 18px;
+}
+
+/* Version pour les modals avec titre */
+.modal-header .close-modal,
+.analytics-header .close-analytics,
+.game-header .close-game {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+/* Pour la modal image (en haut à droite) */
+.modal-content .close-modal {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.modal-content .close-modal::before,
+.modal-content .close-modal::after {
+    width: 20px;
+    height: 3px;
+    background: white;
+}
+
+.modal-content .close-modal:hover::before,
+.modal-content .close-modal:hover::after {
+    background: var(--primary-red);
+    width: 24px;
 }
 
 .modal-content img {
@@ -1602,6 +1693,31 @@ body:hover .cursor-trail {
         margin: 1rem;
         max-width: calc(100% - 2rem);
     }
+    
+    /* Ajustements pour mobile des croix */
+    .close-modal,
+    .close-game,
+    .close-analytics {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .close-modal::before,
+    .close-modal::after,
+    .close-game::before,
+    .close-game::after,
+    .close-analytics::before,
+    .close-analytics::after {
+        width: 18px;
+        height: 2.5px;
+    }
+    
+    .modal-content .close-modal {
+        top: -45px;
+        right: -5px;
+        width: 45px;
+        height: 45px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -2088,4 +2204,16 @@ input:focus,
 ::-moz-selection {
     background: var(--primary-red);
     color: white;
+}
+
+/* === ANIMATION RIPPLE === */
+@keyframes ripple {
+    from {
+        transform: scale(0);
+        opacity: 1;
+    }
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
 }
