@@ -130,7 +130,7 @@ function updateThemeIcon() {
     }
 }
 
-// === SONS ===
+// === SONS - CORRECTION ===
 function toggleSound() {
     soundEnabled = !soundEnabled;
     localStorage.setItem('sound', soundEnabled);
@@ -153,8 +153,15 @@ function updateSoundIcon() {
     const soundToggle = document.querySelector('.sound-toggle');
     
     if (soundIcon && soundToggle) {
-        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
-        soundToggle.classList.toggle('muted', !soundEnabled);
+        // Toujours garder la même icône, juste changer l'état visuel
+        soundIcon.textContent = '🔊';
+        
+        // Ajouter ou retirer la classe muted
+        if (soundEnabled) {
+            soundToggle.classList.remove('muted');
+        } else {
+            soundToggle.classList.add('muted');
+        }
     }
 }
 
@@ -1503,22 +1510,6 @@ function generateChatResponse(message) {
 
     return "Merci pour votre message ! Pour une réponse détaillée, n'hésitez pas à utiliser le formulaire de contact.";
 }
-
-// Style CSS pour l'animation ripple (déjà dans le CSS)
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        from {
-            transform: scale(0);
-            opacity: 1;
-        }
-        to {
-            transform: scale(1);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
 
 // === GESTION DES ERREURS GLOBALES ===
 window.addEventListener('error', (e) => {
