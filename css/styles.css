@@ -2094,17 +2094,6 @@ body:hover .cursor-trail {
     }
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --bg-black: #f8f9fa;
-        --bg-dark-red: #fff5f5;
-        --bg-medium-red: #ffe0e0;
-        --text-white: #1a1a1a;
-        --text-light: #2d3748;
-        --text-gray: #4a5568;
-        --glass-bg: rgba(255, 255, 255, 0.9);
-    }
-}
 
 /* === FOCUS STATES === */
 button:focus,
